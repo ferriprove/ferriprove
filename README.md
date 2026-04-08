@@ -77,9 +77,12 @@ cargo install ferriprove
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — layer design, trust boundary, memory model, Aeneas strategy
 - [TODO.md](./TODO.md) — full atomic task list with milestones and SemVer gates
-- [CONTRIBUTING.md](./CONTRIBUTING.md) — code style, commit conventions, PR process
-- [SECURITY.md](./SECURITY.md) — trust model, soundness bug policy, disclosure process
-- [SOUNDNESS.md](./SOUNDNESS.md) — list of all soundness assumptions (updated per kernel change)
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md) — code style, Conventional Commits, PR process, issue templates
+- [SECURITY.md](./docs/SECURITY.md) — trust model, soundness bug policy, disclosure process
+- [SOUNDNESS.md](./docs/SOUNDNESS.md) — list of all soundness assumptions (updated per kernel change)
+- [GOVERNANCE.md](./docs/GOVERNANCE.md) — project leadership, decision making, license rationale
+- [AUDIT.md](./docs/AUDIT.md) — nanoda_lib audit framework and results
+- [CHANGELOG.md](./docs/CHANGELOG.md) — release history and future plans
 - [docs.rs/ferriprove-kernel](https://docs.rs/ferriprove-kernel) — API documentation
 
 ## Reference Papers
