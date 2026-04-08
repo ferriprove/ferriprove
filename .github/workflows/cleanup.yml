@@ -1,0 +1,68 @@
+name: Cleanup
+
+on:
+  delete:
+    branches: [ main ]
+  schedule:
+    # Run cleanup weekly
+    - cron: '0 4 * * 0'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  cleanup-artifacts:
+    name: Cleanup Old Artifacts
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+    - name: Delete old artifacts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const artifacts = await github.rest.actions.listWorkflowRunsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            per_page: 100
+          });
+
+          const oldArtifacts = artifacts.data.workflow_runs.filter(run => {
+            const runDate = new Date(run.created_at);
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - 30);
+            return runDate < cutoffDate && run.conclusion !== 'success';
+          });
+
+          for (const artifact of oldArtifacts) {
+            await github.rest.actions.deleteWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: artifact.id
+            });
+          }
+
+  cleanup-releases:
+    name: Cleanup Old Releases
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+    - name: Delete old pre-releases
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const releases = await github.rest.repos.listReleases({
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+
+          const oldReleases = releases.data.filter(release => {
+            return release.prerelease && release.draft === false;
+          });
+
+          for (const release of oldReleases.slice(0, -5)) { // Keep last 5 pre-releases
+            await github.rest.repos.deleteRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.id
+            });
+          }

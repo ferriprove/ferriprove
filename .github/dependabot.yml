@@ -1,0 +1,47 @@
+version: 2
+updates:
+  # Update Rust dependencies
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Update GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Update Docker dependencies (if added later)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "chore"
+      include: "scope"

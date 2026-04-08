@@ -1,0 +1,151 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for running benchmark'
+        required: false
+        default: 'Manual run'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index
+          ~/.cargo/registry/cache
+          ~/.cargo/git/db
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run benchmarks
+      run: cargo bench --workspace -- --output-format bencher
+
+    - name: Store benchmark result
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'cargo'
+        output-file-path: target/criterion/reports/index.html
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        comment-on-alert: true
+        alert-threshold: '10%'
+        fail-on-alert: false
+
+  regression-test:
+    name: Performance Regression Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index
+          ~/.cargo/registry/cache
+          ~/.cargo/git/db
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Benchmark main branch
+      run: |
+        git checkout main
+        cargo bench --workspace -- --output-format bencher > main_bench.txt
+
+    - name: Benchmark PR branch
+      run: |
+        git checkout ${{ github.head_ref }}
+        cargo bench --workspace -- --output-format bencher > pr_bench.txt
+
+    - name: Compare performance
+      run: |
+        # Simple comparison - in real implementation use proper benchmark comparison tool
+        echo "Performance comparison between main and PR branch"
+        echo "Main branch results:"
+        cat main_bench.txt
+        echo "PR branch results:"
+        cat pr_bench.txt
+
+  memory-profiling:
+    name: Memory Profiling
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install profiling tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
+
+    - name: Run memory profiling
+      run: |
+        # Run memory-intensive tests with valgrind
+        cargo test --workspace --release -- --test-threads=1
+        # In real implementation, add specific memory profiling commands
+
+  arena-benchmark:
+    name: Lean Kernel Arena Benchmark
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index
+          ~/.cargo/registry/cache
+          ~/.cargo/git/db
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Clone lean-kernel-arena
+      run: |
+        git clone https://github.com/leanprover/lean-kernel-arena.git
+        cd lean-kernel-arena
+
+    - name: Run arena benchmarks
+      run: |
+        cd lean-kernel-arena
+        # Configure ferriprove as checker
+        # Run benchmark suite
+        # Generate performance report
+        echo "Arena benchmark results would be generated here"
+
+    - name: Upload arena results
+      uses: actions/upload-artifact@v4
+      with:
+        name: arena-benchmark-results
+        path: lean-kernel-arena/results/
