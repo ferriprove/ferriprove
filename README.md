@@ -28,11 +28,13 @@ Ferriprove is a ground-up Rust implementation of the Lean 4 type theory stack �
 
 ```
 ferriprove/                  (workspace root)
+├── ferriprove-types/        (shared types: Expr, Level, Name, BinderInfo)
+├── ferriprove-export/       (lean4export NDJSON parser)
 ├── ferriprove-kernel/       (trusted type checker — published to crates.io)
 ├── ferriprove-elab/         (elaborator — implicit args, unification, typeclass)
 ├── ferriprove-tactic/       (tactic engine — intro, apply, cases, simp, ...)
 ├── ferriprove-lsp/          (Language Server Protocol server)
-├── ferriprove-cli/          (binary — ferriprove check <file>)
+├── ferriprove-cli/          (binary — published as `ferriprove` on crates.io)
 └── editors/vscode/          (VS Code extension)
 ```
 
@@ -96,8 +98,8 @@ Candidate: MIT OR Apache-2.0 (Rust convention, compatible with Lean 4's Apache-2
 |---|---|
 | Name | `ferriprove` |
 | Tagline | Lean-compatible ITP kernel and elaborator in Rust |
-| Rust crate (lib) | `ferriprove-kernel` |
-| Rust crate (bin) | `ferriprove` |
+| Rust crates (lib) | `ferriprove-types`, `ferriprove-export`, `ferriprove-kernel`, `ferriprove-elab`, `ferriprove-tactic`, `ferriprove-lsp` |
+| Rust crate (bin) | `ferriprove` (published), `ferriprove-cli` (workspace name) |
 | Target | Lean 4 kernel language (`.lean4export` format) |
 | Reference impl | `leanprover/lean4` (C++), `ammkrn/nanoda_lib` (Rust kernel) |
 | Proof oracle | `digama0/lean4lean` (Lean4Lean metatheory) |

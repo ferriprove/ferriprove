@@ -71,6 +71,8 @@ lcov.info
 *.dylib
 
 # Workspace specific
+/ferriprove-types/target/
+/ferriprove-export/target/
 /ferriprove-kernel/target/
 /ferriprove-elab/target/
 /ferriprove-tactic/target/

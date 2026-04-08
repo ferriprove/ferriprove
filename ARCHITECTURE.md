@@ -14,8 +14,26 @@
 ├──────────────────────────────────────────────────────┤
 │                 ferriprove-kernel                     │  Trusted kernel: def_eq, infer, whnf
 ├──────────────────────────────────────────────────────┤
-│               Environment + lean4export               │  Declarations, inductive types
+│                 ferriprove-export                     │  lean4export NDJSON parser
+├──────────────────────────────────────────────────────┤
+│                  ferriprove-types                     │  Expr, Level, Name, BinderInfo
 └──────────────────────────────────────────────────────┘
+```
+
+**Dependency graph (acyclic, enforced by Cargo):**
+
+```
+ferriprove-types
+      ↓
+ferriprove-export
+      ↓
+ferriprove-kernel
+      ↓
+ferriprove-elab
+      ↓
+ferriprove-tactic
+    ↓       ↓
+ferriprove-lsp  ferriprove-cli
 ```
 
 **Trust boundary:** Only `ferriprove-kernel` is trusted. Everything above it can be buggy without compromising soundness — a faulty elaborator can only fail to produce a kernel-checkable term, not produce a false one. Soundness is a property of the kernel alone.
@@ -26,7 +44,9 @@
 
 | Layer | Trusted? | Consequence of bug |
 |---|---|---|
-| `ferriprove-kernel` | ✅ Yes | Soundness hole — treat as P0 |
+| `ferriprove-types` | ✅ Yes | Type corruption — P0, kernel depends on it |
+| `ferriprove-export` | ❌ No | Parse failure, not false proof |
+| `ferriprove-kernel` | ✅ Yes | Soundness hole — P0 |
 | `ferriprove-elab` | ❌ No | Elaboration failure, not false proof |
 | `ferriprove-tactic` | ❌ No | Tactic failure, not false proof |
 | `ferriprove-lsp` | ❌ No | UI error, not false proof |
@@ -273,15 +293,27 @@ ferriprove/
 ├── Cargo.toml                    (workspace)
 ├── rust-toolchain.toml
 ├── .cargo/config.toml
+├── ferriprove-types/
+│   ├── src/
+│   │   ├── expr.rs               (Expr, Level, BinderInfo, Literal)
+│   │   ├── name.rs               (Name — hierarchical, interned)
+│   │   ├── level.rs              (Level operations)
+│   │   └── lib.rs
+│   └── tests/
+├── ferriprove-export/
+│   ├── src/
+│   │   ├── parser.rs             (lean4export NDJSON parser)
+│   │   ├── reconstruct.rs        (Expr tree reconstruction)
+│   │   └── lib.rs
+│   ├── fuzz/                     (cargo-fuzz targets)
+│   └── tests/
 ├── ferriprove-kernel/
 │   ├── src/
-│   │   ├── expr.rs               (Expr, Level, Name, BinderInfo)
 │   │   ├── env.rs                (Environment, Declaration)
 │   │   ├── reduce.rs             (whnf, full_reduce)
 │   │   ├── infer.rs              (infer_type, check_type)
 │   │   ├── def_eq.rs             (def_eq_pure, def_eq with cache)
 │   │   ├── inductive.rs          (inductive validator, recursor gen)
-│   │   ├── export.rs             (lean4export parser)
 │   │   └── lib.rs
 │   ├── benches/
 │   │   ├── def_eq.rs
