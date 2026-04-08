@@ -147,9 +147,9 @@ The foundation is now complete and ready for actual kernel development work.
 ---
 
 ## Milestone 1 — Kernel Parity + Verification
-> `ferriprove-kernel` passes full lean-kernel-arena. Soundness proved via Lean4Lean.
+> `ferriprove-types`, `ferriprove-export`, and `ferriprove-kernel` complete. Soundness proved via Lean4Lean.
 > **Gate:** All arena tests pass. Mathlib typecheck clean. Performance within 2× C++ kernel.
-> **SemVer:** `v0.1.0` — `ferriprove-kernel` published to crates.io.
+> **SemVer:** `v0.1.0` — `ferriprove-types`, `ferriprove-export`, `ferriprove-kernel` published to crates.io.
 
 ### M1-A: Term Representation (`ferriprove-types`)
 
