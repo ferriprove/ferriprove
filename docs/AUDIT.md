@@ -8,7 +8,7 @@ This document contains the audit results for `nanoda_lib` as prior art for Ferri
 
 ### Target: nanoda_lib
 - **Repository**: https://github.com/ammkrn/nanoda_lib
-- **Commit Hash**: TBD (will be recorded during audit)
+- **Commit Hash**: 224b7c186e695e2e24f29e272a3b2aa7a97f8219
 - **License**: MIT
 - **Purpose**: Rust-based Lean 4 kernel checker (prior art)
 
@@ -40,9 +40,9 @@ This document contains the audit results for `nanoda_lib` as prior art for Ferri
 
 ## Audit Status
 
-### Current Phase: In Progress
+### Current Phase: Complete
 - [x] M0-C-1: Clone and build nanoda_lib
-- [ ] M0-C-2: Run against lean-kernel-arena
+- [x] M0-C-2: Run against lean-kernel-arena
 - [x] M0-C-3: Document findings and gaps
 
 ### Prerequisites
@@ -206,6 +206,19 @@ This document contains the audit results for `nanoda_lib` as prior art for Ferri
 2. **Sandboxing**: Add sandboxing for untrusted export processing
 3. **Dependency Auditing**: Regular security audits of all dependencies
 4. **Memory Safety**: Maintain nanoda_lib's good memory safety practices
+
+## Fork/Fresh Decision
+
+**Decision**: Fresh implementation (not a fork)
+
+**Rationale**:
+1. **Architectural Differences**: Ferriprove's modular approach vs nanoda_lib's monolithic design
+2. **Formal Verification**: Ferriprove requires Aeneas integration from the start
+3. **Performance Goals**: Arena allocation and concurrent processing require different architecture
+4. **License Compatibility**: Fresh implementation avoids any licensing complications
+5. **Learning Opportunity**: Building from scratch ensures deep understanding of Lean 4 kernel
+
+**Approach**: Use nanoda_lib as prior art and reference, but implement fresh with Ferriprove's architectural improvements.
 
 ## Next Steps for Ferriprove
 

@@ -188,16 +188,16 @@ The foundation is now complete and ready for actual kernel development work.
 
 ### M1-C: Environment (`ferriprove-kernel`)
 
-- [ ] **M1-D-1** Define `Declaration` type
-  - [ ] M1-D-1.1 Variants: `Axiom`, `Definition`, `Theorem`, `Opaque`, `Quot`, `Inductive`, `Constructor`, `Recursor`
-  - [ ] M1-D-1.2 Transparency field: `reducible`, `instances`, `default`, `all`
-  - [ ] M1-D-1.3 Universe parameter list per declaration
-  - [ ] M1-D-1.4 `is_definition() → bool`, `is_theorem() → bool` helpers
-- [ ] **M1-D-2** Implement `Environment`
-  - [ ] M1-D-2.1 `HashMap<Name, Declaration>` with O(1) lookup
-  - [ ] M1-D-2.2 `add_declaration(decl) → Result<(), EnvError>` with duplicate name check
-  - [ ] M1-D-2.3 `get_declaration(name, transparency) → Option<&Declaration>`
-  - [ ] M1-D-2.4 Extension protocol for inductive types (add constructors + recursor atomically)
+- [ ] **M1-C-1** Define `Declaration` type
+  - [ ] M1-C-1.1 Variants: `Axiom`, `Definition`, `Theorem`, `Opaque`, `Quot`, `Inductive`, `Constructor`, `Recursor`
+  - [ ] M1-C-1.2 Transparency field: `reducible`, `instances`, `default`, `all`
+  - [ ] M1-C-1.3 Universe parameter list per declaration
+  - [ ] M1-C-1.4 `is_definition() → bool`, `is_theorem() → bool` helpers
+- [ ] **M1-C-2** Implement `Environment`
+  - [ ] M1-C-2.1 `HashMap<Name, Declaration>` with O(1) lookup
+  - [ ] M1-C-2.2 `add_declaration(decl) → Result<(), EnvError>` with duplicate name check
+  - [ ] M1-C-2.3 `get_declaration(name, transparency) → Option<&Declaration>`
+  - [ ] M1-C-2.4 Extension protocol for inductive types (add constructors + recursor atomically)
 
 ### M1-D: Reduction Engine (Pure — Aeneas scope)
 

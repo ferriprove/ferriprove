@@ -137,7 +137,7 @@ We follow the [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-
 - **GitHub Issues**: Bug reports, feature requests
 - **GitHub Discussions**: General questions, ideas
 - **GitHub PRs**: Code contributions, reviews
-- **Email**: security@ferriprove.org (security issues)
+- **Twitter**: @ks_sha888 (security issues)
 
 ### Meeting Schedule
 
@@ -165,12 +165,12 @@ We follow the [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-
 ## Security and Soundness
 
 ### Security Team
-- **security@ferriprove.org** - Security vulnerabilities
+- **@ks_sha888** (Twitter) - Security vulnerabilities
 - Confidential reporting and coordinated disclosure
 - Security advisories and patches
 
 ### Soundness Team
-- **soundness@ferriprove.org** - Soundness bugs
+- **@ks_sha888** (Twitter) - Soundness bugs
 - P0 bug response and fixes
 - Formal verification oversight
 
@@ -224,12 +224,18 @@ License changes require:
 ### General Inquiries
 - **GitHub Issues**: Public questions and discussions
 - **GitHub Discussions**: Community conversations
-- **Email**: maintainers@ferriprove.org
+- **Twitter**: @ks_sha888
 
 ### Urgent Matters
-- **Security**: security@ferriprove.org
-- **Soundness**: soundness@ferriprove.org
+- **Security**: security@ferriprove.org (future)
+- **Soundness**: soundness@ferriprove.org (future)
 - **Legal**: legal@ferriprove.org (future)
+
+### Current Contact Channel
+- **X (Twitter)**: @ks_sha888 - Current primary contact method
+
+### Future Contact Methods (Planned)
+- **General**: maintainers@ferriprove.org (future)
 
 ### Project Lead
 - **GitHub**: @SHA888

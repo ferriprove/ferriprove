@@ -173,10 +173,17 @@ Soundness bugs should be reported via GitHub issues with the `soundness` label a
 - Expected vs actual behavior
 - Potential impact assessment
 
-For P0 issues, also email: **soundness@ferriprove.org**
+For P0 issues, also contact: **soundness@ferriprove.org** (future)
+
+### Current Contact Channel
+- **X (Twitter)**: @ks_sha888 - Current primary contact method
 
 ## Soundness Team
 
 The Ferriprove soundness team can be contacted at:
-- **soundness@ferriprove.org** - Soundness bugs and concerns
-- **maintainers@ferriprove.org** - General soundness questions
+- **@ks_sha888** (Twitter) - Soundness bugs and concerns
+- GitHub Issues - General soundness questions
+
+### Future Contact Methods (Planned)
+- **soundness@ferriprove.org** - Soundness bugs and concerns (future)
+- **maintainers@ferriprove.org** - General soundness questions (future)

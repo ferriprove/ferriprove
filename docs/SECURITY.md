@@ -18,7 +18,10 @@ Ferriprove distinguishes between **security vulnerabilities** and **soundness bu
 
 ### Reporting Security Vulnerabilities
 
-For security vulnerabilities, please email us at: **security@ferriprove.org**
+For security vulnerabilities, please contact: **security@ferriprove.org** (future)
+
+### Current Contact Channel
+- **X (Twitter)**: @ks_sha888 - Current primary contact method
 
 Please include:
 - Description of the vulnerability
@@ -144,15 +147,19 @@ The `ferriprove-cli` crate includes:
 ### Notification Channels
 
 - GitHub Security Advisories
-- Email notifications to registered users
+- Email notifications to registered users (future)
 - Release notes with security details
 - Blog posts for critical issues
 
 ## Security Team
 
 The Ferriprove security team can be contacted at:
-- **security@ferriprove.org** - Security vulnerabilities
-- **maintainers@ferriprove.org** - General security questions
+- **@ks_sha888** (Twitter) - Security vulnerabilities
+- GitHub Issues - General security questions
+
+### Future Contact Methods (Planned)
+- **security@ferriprove.org** - Security vulnerabilities (future)
+- **maintainers@ferriprove.org** - General security questions (future)
 
 ## Security Badges
 
