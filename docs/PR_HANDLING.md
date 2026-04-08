@@ -20,6 +20,7 @@ Ferriprove uses a sophisticated PR automation system that provides:
 When a PR is opened, the following automated actions occur:
 
 #### ✅ PR Validation
+
 - Runs pre-commit hooks on all files
 - Executes full test suite
 - Validates commit message format
@@ -27,17 +28,21 @@ When a PR is opened, the following automated actions occur:
 - Identifies potential breaking changes
 
 #### 🏷️ Smart Labeling
+
 - **Type labels**: `type: code`, `type: documentation`, `type: tests`, `type: ci`, `type: dependencies`
 - **Size labels**: `size: small`, `size: medium`, `size: large` (based on lines changed)
 - **Component labels**: `component: types`, `component: kernel`, etc.
 
 #### 📊 Metadata Management
+
 - Automatically assigns to appropriate milestone
 - Sets priority based on content
 - Tracks statistics and metrics
 
 #### 👋 Welcome Message
+
 First-time contributors receive a comprehensive welcome message with:
+
 - Development resources
 - Next steps guidance
 - Links to documentation and support
@@ -45,12 +50,14 @@ First-time contributors receive a comprehensive welcome message with:
 ### 2. During Development
 
 #### 🔄 Continuous Validation
+
 - Each push triggers full validation
 - Pre-commit hooks ensure code quality
 - Tests run on all supported platforms
 - Documentation builds are validated
 
 #### 📈 Status Updates
+
 - Real-time CI status updates
 - Merge readiness indicators
 - Review progress tracking
@@ -59,12 +66,14 @@ First-time contributors receive a comprehensive welcome message with:
 ### 3. Review Process
 
 #### 👥 Review Requirements
+
 - At least one maintainer approval required
 - All CI checks must pass
 - No merge conflicts allowed
 - Documentation updated if applicable
 
 #### 🔍 Review Automation
+
 - Automatic size and complexity analysis
 - Breaking change detection
 - Security vulnerability scanning
@@ -73,14 +82,18 @@ First-time contributors receive a comprehensive welcome message with:
 ### 4. Merge Process
 
 #### ✅ Merge Readiness
+
 The system automatically determines merge readiness based on:
+
 - ✅ All CI checks passing
 - ✅ Maintainer approval received
 - ✅ No merge conflicts
 - ✅ Documentation complete (if required)
 
 #### 📊 Merge Statistics
+
 When merged, PR automatically receives:
+
 - Statistics summary comment
 - Contribution acknowledgment
 - Performance metrics (if applicable)
@@ -89,7 +102,8 @@ When merged, PR automatically receives:
 
 ### PR Automation Workflow (`.github/workflows/pr-automation.yml`)
 
-#### Jobs:
+#### Jobs
+
 1. **PR Validation**: Full testing and validation
 2. **PR Metadata Management**: Auto-labeling and milestone assignment
 3. **Welcome Messages**: First-time contributor onboarding
@@ -99,6 +113,7 @@ When merged, PR automatically receives:
 ### Pre-commit Integration
 
 All PRs must pass:
+
 - **Code formatting** (rustfmt)
 - **Linting** (clippy)
 - **Testing** (cargo test)
@@ -109,6 +124,7 @@ All PRs must pass:
 ### Dependabot Integration
 
 Automated dependency management:
+
 - **Weekly updates** for Rust dependencies
 - **Security patches** prioritized
 - **Grouped updates** for related packages
@@ -119,6 +135,7 @@ Automated dependency management:
 ### PR Template (`.github/pull_request_template.md`)
 
 Standardized PR submission includes:
+
 - **Checklist** for contributors
 - **Change type classification**
 - **Testing requirements**
@@ -128,18 +145,21 @@ Standardized PR submission includes:
 ### Issue Templates
 
 #### Bug Report (`.github/ISSUE_TEMPLATE/bug_report.md`)
+
 - Structured bug reporting
 - Environment information
 - Reproduction steps
 - Debug information
 
 #### Feature Request (`.github/ISSUE_TEMPLATE/feature_request.md`)
+
 - Comprehensive feature proposals
 - Use case descriptions
 - Implementation considerations
 - Testing strategy
 
 #### General Question (`.github/ISSUE_TEMPLATE/general_question.md`)
+
 - Structured question format
 - Context requirements
 - Expected response types
@@ -147,6 +167,7 @@ Standardized PR submission includes:
 ## 🏷️ Label System
 
 ### Type Labels
+
 - `type: bug` - Bug reports and fixes
 - `type: enhancement` - Feature requests
 - `type: documentation` - Documentation changes
@@ -157,6 +178,7 @@ Standardized PR submission includes:
 - `type: dependencies` - Dependency updates
 
 ### Status Labels
+
 - `status: triage` - Needs triage
 - `status: in-progress` - Being worked on
 - `status: review-needed` - Awaiting review
@@ -166,12 +188,14 @@ Standardized PR submission includes:
 - `status: good-first-issue` - Good for newcomers
 
 ### Priority Labels
+
 - `priority: critical` - Critical priority
 - `priority: high` - High priority
 - `priority: medium` - Medium priority
 - `priority: low` - Low priority
 
 ### Size Labels
+
 - `size: xs` - Tiny change (0-10 lines)
 - `size: small` - Small change (10-50 lines)
 - `size: medium` - Medium change (50-200 lines)
@@ -179,6 +203,7 @@ Standardized PR submission includes:
 - `size: xl` - Very large change (500+ lines)
 
 ### Component Labels
+
 - `component: types` - ferriprove-types
 - `component: export` - ferriprove-export
 - `component: kernel` - ferriprove-kernel
@@ -192,6 +217,7 @@ Standardized PR submission includes:
 ### For Contributors
 
 #### Before Opening PR
+
 1. **Run local validation**: `./scripts/dev.sh precommit`
 2. **Update documentation**: Add relevant docs
 3. **Write tests**: Cover new functionality
@@ -199,6 +225,7 @@ Standardized PR submission includes:
 5. **Check size**: Consider splitting large changes
 
 #### During Development
+
 1. **Small, focused commits**: Atomic changes
 2. **Descriptive messages**: Clear commit history
 3. **Regular testing**: Ensure tests pass
@@ -206,6 +233,7 @@ Standardized PR submission includes:
 5. **Performance considerations**: Monitor impact
 
 #### After Opening PR
+
 1. **Respond to reviews**: Address feedback promptly
 2. **Update PR**: Push changes to same branch
 3. **Monitor CI**: Fix any failures
@@ -214,6 +242,7 @@ Standardized PR submission includes:
 ### For Reviewers
 
 #### Review Process
+
 1. **Thorough analysis**: Check code quality and logic
 2. **Test coverage**: Ensure adequate testing
 3. **Documentation**: Verify docs are accurate
@@ -221,6 +250,7 @@ Standardized PR submission includes:
 5. **Security**: Check for security implications
 
 #### Review Guidelines
+
 1. **Constructive feedback**: Clear, actionable comments
 2. **Explain reasoning**: Help contributors understand
 3. **Suggest improvements**: Offer specific recommendations
@@ -230,6 +260,7 @@ Standardized PR submission includes:
 ### For Maintainers
 
 #### Merge Decisions
+
 1. **Quality first**: Ensure high standards
 2. **Review requirements**: At least one approval
 3. **CI status**: All checks must pass
@@ -237,6 +268,7 @@ Standardized PR submission includes:
 5. **Breaking changes**: Require careful consideration
 
 #### Repository Management
+
 1. **Label consistency**: Use standardized labels
 2. **Milestone tracking**: Keep milestones current
 3. **Dependency updates**: Review dependabot PRs
@@ -246,6 +278,7 @@ Standardized PR submission includes:
 ## 📊 Metrics and Analytics
 
 ### PR Statistics
+
 - **Merge time**: Time from opening to merge
 - **Review time**: Time to first review
 - **PR size**: Distribution of PR sizes
@@ -253,6 +286,7 @@ Standardized PR submission includes:
 - **Quality metrics**: Test coverage, documentation
 
 ### Automation Effectiveness
+
 - **CI success rate**: Percentage of successful CI runs
 - **Pre-commit effectiveness**: Issues caught before merge
 - **Label accuracy**: Correct automatic labeling
@@ -261,6 +295,7 @@ Standardized PR submission includes:
 ## 🔧 Configuration Files
 
 ### Key Files
+
 - `.github/workflows/pr-automation.yml` - Main PR automation
 - `.github/pull_request_template.md` - PR template
 - `.github/ISSUE_TEMPLATE/` - Issue templates
@@ -269,6 +304,7 @@ Standardized PR submission includes:
 - `.pre-commit-config.yaml` - Pre-commit hooks
 
 ### Customization
+
 - **Label colors**: Customize to match project branding
 - **Automation rules**: Adjust based on project needs
 - **Review requirements**: Modify approval policies
@@ -277,6 +313,7 @@ Standardized PR submission includes:
 ## 🚀 Future Enhancements
 
 ### Planned Features
+
 - **Advanced analytics**: Detailed PR metrics dashboard
 - **Auto-merge**: Safe automatic merging for certain PR types
 - **Integration testing**: Cross-platform testing automation
@@ -284,6 +321,7 @@ Standardized PR submission includes:
 - **Security scanning**: Enhanced security vulnerability detection
 
 ### Community Features
+
 - **Contributor recognition**: Automated contributor highlights
 - **Progress tracking**: Visual progress indicators
 - **Discussion integration**: Enhanced community engagement
@@ -292,16 +330,19 @@ Standardized PR submission includes:
 ## 📞 Support and Resources
 
 ### Documentation
+
 - [Contributing Guide](CONTRIBUTING.md)
 - [Development Setup](PRECOMMIT.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ### Communication
+
 - [GitHub Discussions](https://github.com/ferriprove/ferriprove/discussions)
 - [Issues](https://github.com/ferriprove/ferriprove/issues)
 - [Security Policy](SECURITY.md)
 
 ### Getting Help
+
 - **Questions**: Use GitHub Discussions
 - **Bug reports**: Use issue templates
 - **Feature requests**: Use feature request template

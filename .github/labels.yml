@@ -1,188 +1,188 @@
 # GitHub Labels Configuration for Ferriprove
 
 # Type Labels
-- name: type: bug
+- name: "type: bug"
   color: d73a4a
   description: Something isn't working
 
-- name: type: enhancement
+- name: "type: enhancement"
   color: a2eeef
   description: New feature or request
 
-- name: type: documentation
+- name: "type: documentation"
   color: 0075ca
   description: Improvements or additions to documentation
 
-- name: type: question
+- name: "type: question"
   color: d876e3
   description: Further information is requested
 
-- name: type: code
+- name: "type: code"
   color: 0075ca
   description: Code changes
 
-- name: type: tests
+- name: "type: tests"
   color: 0075ca
   description: Test-related changes
 
-- name: type: ci
+- name: "type: ci"
   color: 0075ca
   description: CI/CD related changes
 
-- name: type: dependencies
+- name: "type: dependencies"
   color: 0075ca
   description: Dependency updates
 
 # Status Labels
-- name: status: triage
+- name: "status: triage"
   color: ededed
   description: Issue needs triage
 
-- name: status: in-progress
+- name: "status: in-progress"
   color: fbca04
   description: Currently being worked on
 
-- name: status: review-needed
+- name: "status: review-needed"
   color: fbca04
   description: Awaiting review
 
-- name: status: blocked
+- name: "status: blocked"
   color: e11d21
   description: Blocked by another issue
 
-- name: status: ready-to-merge
+- name: "status: ready-to-merge"
   color: 0e8a16
   description: Ready to be merged
 
-- name: status: wont-fix
+- name: "status: wont-fix"
   color: ffffff
   description: Will not be fixed
 
-- name: status: duplicate
+- name: "status: duplicate"
   color: cfd3d7
   description: Duplicate of another issue
 
-- name: status: help-wanted
+- name: "status: help-wanted"
   color: 008672
   description: Community help requested
 
-- name: status: good-first-issue
+- name: "status: good-first-issue"
   color: 7057ff
   description: Good for newcomers
 
 # Priority Labels
-- name: priority: critical
+- name: "priority: critical"
   color: b60205
   description: Critical priority
 
-- name: priority: high
+- name: "priority: high"
   color: d93f0b
   description: High priority
 
-- name: priority: medium
+- name: "priority: medium"
   color: fbca04
   description: Medium priority
 
-- name: priority: low
+- name: "priority: low"
   color: fef2c0
   description: Low priority
 
 # Size Labels
-- name: size: xs
+- name: "size: xs"
   color: 006b75
   description: Tiny change (0-10 lines)
 
-- name: size: small
+- name: "size: small"
   color: 0075ca
   description: Small change (10-50 lines)
 
-- name: size: medium
+- name: "size: medium"
   color: 1d76db
   description: Medium change (50-200 lines)
 
-- name: size: large
+- name: "size: large"
   color: 5319e7
   description: Large change (200-500 lines)
 
-- name: size: xl
+- name: "size: xl"
   color: 986ee2
   description: Very large change (500+ lines)
 
 # Component Labels
-- name: component: types
+- name: "component: types"
   color: 0075ca
   description: Related to ferriprove-types
 
-- name: component: export
+- name: "component: export"
   color: 0075ca
   description: Related to ferriprove-export
 
-- name: component: kernel
+- name: "component: kernel"
   color: 0075ca
   description: Related to ferriprove-kernel
 
-- name: component: elab
+- name: "component: elab"
   color: 0075ca
   description: Related to ferriprove-elab
 
-- name: component: tactic
+- name: "component: tactic"
   color: 0075ca
   description: Related to ferriprove-tactic
 
-- name: component: lsp
+- name: "component: lsp"
   color: 0075ca
   description: Related to ferriprove-lsp
 
-- name: component: cli
+- name: "component: cli"
   color: 0075ca
   description: Related to ferriprove-cli
 
 # Special Labels
-- name: lean
+- name: "lean"
   color: 28a745
   description: Related to Lean 4 integration
 
-- name: performance
+- name: "performance"
   color: 1d76db
   description: Performance related
 
-- name: security
+- name: "security"
   color: b60205
   description: Security related
 
-- name: breaking-change
+- name: "breaking-change"
   color: b60205
   description: Breaking changes
 
-- name: dependencies
+- name: "dependencies"
   color: 0366d6
   description: Pull requests that update a dependency file
 
-- name: new-version
+- name: "new-version"
   color: 84b6eb
   description: New version release
 
-- name: maintenance
+- name: "maintenance"
   color: fef2c0
   description: Maintenance tasks
 
 # Automation Labels
-- name: auto-merge
+- name: "auto-merge"
   color: 0e8a16
   description: Safe to auto-merge
 
-- name: needs-author-feedback
+- name: "needs-author-feedback"
   color: fbca04
   description: Awaiting response from author
 
-- name: needs-maintainer-review
+- name: "needs-maintainer-review"
   color: fbca04
   description: Needs maintainer review
 
-- name: approved
+- name: "approved"
   color: 0e8a16
   description: Approved for merge
 
-- name: changes-requested
+- name: "changes-requested"
   color: d93f0b
   description: Changes requested by reviewer

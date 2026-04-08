@@ -44,12 +44,12 @@ CRATES=("ferriprove-types" "ferriprove-export" "ferriprove-kernel")
 for crate in "${CRATES[@]}"; do
     if [[ -d "$crate" ]]; then
         print_status "Checking documentation coverage for $crate..."
-        
+
         # Count public items
         PUBLIC_ITEMS=$(cargo doc --no-deps --document-private-items --quiet --message-format=json 2>/dev/null | \
             jq -r 'select(.target.crate_name == "'$crate'") | select(.message.level == "warning") | .message.message' | \
             grep -c "missing documentation" || echo "0")
-        
+
         if [[ "$PUBLIC_ITEMS" -gt 0 ]]; then
             print_warning "$crate has $PUBLIC_ITEMS undocumented public items"
         else

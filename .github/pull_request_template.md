@@ -52,7 +52,8 @@ Please check the relevant boxes:
 
 ## 📋 Review Checklist
 
-### For Reviewers:
+### For Reviewers
+
 - [ ] Code is well-structured and follows Rust best practices
 - [ ] Tests are comprehensive and cover edge cases
 - [ ] Documentation is clear and accurate
@@ -60,7 +61,8 @@ Please check the relevant boxes:
 - [ ] Security implications are considered
 - [ ] Breaking changes are clearly documented (if any)
 
-### For Author:
+### For Author
+
 - [ ] Ready for review
 - [ ] All requested changes have been addressed
 - [ ] Tests have been updated if needed

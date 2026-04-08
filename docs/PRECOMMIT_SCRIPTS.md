@@ -5,6 +5,7 @@ This guide shows how to integrate custom scripts into pre-commit hooks for the F
 ## Overview
 
 Pre-commit hooks can run custom scripts alongside standard hooks. This allows you to:
+
 - Validate project-specific requirements
 - Run custom performance benchmarks
 - Check documentation coverage
@@ -53,12 +54,14 @@ Add custom scripts to the `local` repo section in `.pre-commit-config.yaml`:
 **When it runs**: When Cargo.toml files change
 
 **What it checks**:
+
 - Workspace configuration exists
 - All workspace members exist and have Cargo.toml
 - No duplicate package names
 - Version consistency across workspace
 
 **Hook configuration**:
+
 ```yaml
 - id: workspace-validation
   name: workspace validation
@@ -76,12 +79,14 @@ Add custom scripts to the `local` repo section in `.pre-commit-config.yaml`:
 **When it runs**: On Rust file changes
 
 **What it checks**:
+
 - Documentation builds without warnings
 - Undocumented public items
 - README files exist
 - Examples directory exists
 
 **Hook configuration**:
+
 ```yaml
 - id: documentation-coverage
   name: documentation coverage
@@ -99,12 +104,14 @@ Add custom scripts to the `local` repo section in `.pre-commit-config.yaml`:
 **When it runs**: Optional, on Rust file changes
 
 **What it checks**:
+
 - Expression creation performance
 - Substitution performance
 - Compilation time
 - Binary size
 
 **Hook configuration**:
+
 ```yaml
 - id: performance-benchmark
   name: performance benchmark
@@ -123,10 +130,12 @@ Add custom scripts to the `local` repo section in `.pre-commit-config.yaml`:
 **When it runs**: Optional, on any commit
 
 **What it checks**:
+
 - Dev script functionality
 - Basic project health
 
 **Hook configuration**:
+
 ```yaml
 - id: dev-script-check
   name: dev script check
@@ -229,6 +238,7 @@ Pass filenames to scripts for processing:
 ```
 
 The script receives filenames as arguments:
+
 ```bash
 #!/bin/bash
 for file in "$@"; do
@@ -240,21 +250,25 @@ done
 ## Best Practices
 
 ### 1. Performance
+
 - Keep scripts fast (under 30 seconds)
 - Use caching for expensive operations
 - Skip expensive checks on CI with `always_run: false`
 
 ### 2. Reliability
+
 - Handle errors gracefully
 - Provide clear error messages
 - Use `set -euo pipefail` for robust error handling
 
 ### 3. Maintainability
+
 - Document script purpose clearly
 - Use consistent output formatting
 - Make scripts idempotent (safe to run multiple times)
 
 ### 4. Integration
+
 - Test scripts independently before adding to hooks
 - Use the dev script to test hook integration
 - Consider CI/CD implications

@@ -22,11 +22,13 @@ assignees: ''
 ## 📋 Use Cases
 <!-- Describe specific use cases where this feature would be valuable -->
 
-### Use Case 1:
+### Use Case 1
+
 **Scenario:** <!-- Describe a specific scenario -->
 **Benefit:** <!-- What benefit would this provide -->
 
-### Use Case 2:
+### Use Case 2
+
 **Scenario:** <!-- Describe another scenario -->
 **Benefit:** <!-- What benefit would this provide -->
 
@@ -34,6 +36,7 @@ assignees: ''
 <!-- Any design considerations or requirements -->
 
 ### API Design (if applicable)
+
 ```rust
 // Proposed API example
 pub fn new_feature() -> Result<(), Error> {
@@ -48,6 +51,7 @@ pub fn new_feature() -> Result<(), Error> {
 <!-- Technical details about how this might be implemented -->
 
 ### Components to Modify
+
 - [ ] ferriprove-types
 - [ ] ferriprove-export
 - [ ] ferriprove-kernel

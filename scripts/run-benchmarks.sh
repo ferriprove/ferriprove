@@ -43,7 +43,7 @@ cargo build --release --workspace
 # Test ferriprove-types performance
 if [[ -d "ferriprove-types" ]]; then
     print_status "Running ferriprove-types benchmarks..."
-    
+
     # Create a simple benchmark script
     cat > /tmp/benchmark_types.rs << 'EOF'
 use std::time::Instant;
@@ -52,11 +52,11 @@ use ferriprove_types::interning::ExprInterner;
 
 fn main() {
     let start = Instant::now();
-    
+
     // Test expression creation performance
     let mut interner = ExprInterner::new();
     let nat = Name::from("Nat");
-    
+
     for i in 0..1000 {
         let expr = Expr::app(
             Expr::const_(nat.clone()),
@@ -64,23 +64,23 @@ fn main() {
         );
         let _interned = interner.intern(expr).unwrap();
     }
-    
+
     let duration = start.elapsed();
     println!("Created and interned 1000 expressions in {:?}", duration);
-    
+
     // Test substitution performance
     let start = Instant::now();
     let x = Expr::Var(0);
     let replacement = Expr::lit(Literal::Nat(42));
     let mut expr = x.clone();
-    
+
     for _ in 0..100 {
         expr = utils::subst(&expr, &replacement, 0);
     }
-    
+
     let duration = start.elapsed();
     println!("Performed 100 substitutions in {:?}", duration);
-    
+
     println!("Performance benchmarks completed!");
 }
 EOF
@@ -113,7 +113,7 @@ if [[ -f "target/release/ferriprove-cli" ]]; then
     BINARY_SIZE=$(stat -c%s "target/release/ferriprove-cli")
     SIZE_MB=$((BINARY_SIZE / 1024 / 1024))
     print_status "CLI binary size: ${SIZE_MB}MB"
-    
+
     SIZE_THRESHOLD=50MB
     if [[ $BINARY_SIZE -gt $((50 * 1024 * 1024)) ]]; then
         print_warning "Binary size (${SIZE_MB}MB) exceeds threshold (${SIZE_THRESHOLD})"

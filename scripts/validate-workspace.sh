@@ -45,12 +45,12 @@ for member in $WORKSPACE_MEMBERS; do
         print_error "Workspace member $member does not exist"
         exit 1
     fi
-    
+
     if [[ ! -f "$member/Cargo.toml" ]]; then
         print_error "Workspace member $member has no Cargo.toml"
         exit 1
     fi
-    
+
     print_status "✓ Workspace member $member exists"
 done
 

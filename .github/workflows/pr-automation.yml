@@ -53,7 +53,7 @@ jobs:
       run: |
         CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}..HEAD | wc -l)
         echo "PR changed $CHANGED_FILES files"
-        
+
         if [ $CHANGED_FILES -gt 50 ]; then
           echo "::warning::Large PR detected ($CHANGED_FILES files). Consider breaking into smaller PRs."
         fi
@@ -69,7 +69,7 @@ jobs:
       run: |
         # Check commit messages for conventional format
         COMMITS=$(git rev-list origin/${{ github.base_ref }}..HEAD)
-        
+
         for commit in $COMMITS; do
           MESSAGE=$(git log --format=%B -n 1 $commit)
           if ! echo "$MESSAGE" | grep -E "^(feat|fix|docs|style|refactor|test|chore|ci|build)(\(.+\))?: "; then
@@ -159,7 +159,7 @@ jobs:
           if (milestones.length > 0) {
             // Use the most recent milestone for new PRs
             const latestMilestone = milestones[0];
-            
+
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -199,25 +199,26 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `🎉 **Welcome to Ferriprove!** 
+              body: |
+                🎉 **Welcome to Ferriprove!**
 
-Thank you for your first pull request! We're excited to have you contribute to our Lean 4 compatible type checker.
+                Thank you for your first pull request! We're excited to have you contribute to our Lean 4 compatible type checker.
 
-## Next Steps:
-1. ✅ Your PR is now being validated by our CI system
-2. 🔍 Our team will review your changes shortly
-3. 📝 Please respond to any review comments
+                ## Next Steps:
+                1. ✅ Your PR is now being validated by our CI system
+                2. 🔍 Our team will review your changes shortly
+                3. 📝 Please respond to any review comments
 
-## Development Resources:
-- 📖 [Contributing Guide](https://github.com/ferriprove/ferriprove/blob/main/docs/CONTRIBUTING.md)
-- 🔧 [Development Setup](https://github.com/ferriprove/ferriprove/blob/main/docs/PRECOMMIT.md)
-- 💬 [Discussions](https://github.com/ferriprove/ferriprove/discussions) for questions
+                ## Development Resources:
+                - 📖 [Contributing Guide](https://github.com/ferriprove/ferriprove/blob/main/docs/CONTRIBUTING.md)
+                - 🔧 [Development Setup](https://github.com/ferriprove/ferriprove/blob/main/docs/PRECOMMIT.md)
+                - 💬 [Discussions](https://github.com/ferriprove/ferriprove/discussions) for questions
 
-## Getting Help:
-- 🐛 [Report Issues](https://github.com/ferriprove/ferriprove/issues)
-- 💭 [Start a Discussion](https://github.com/ferriprove/ferriprove/discussions/new)
+                ## Getting Help:
+                - 🐛 [Report Issues](https://github.com/ferriprove/ferriprove/issues)
+                - 💭 [Start a Discussion](https://github.com/ferriprove/ferriprove/discussions/new)
 
-We appreciate your contribution to making Lean 4 type checking more accessible! 🚀`,
+                We appreciate your contribution to making Lean 4 type checking more accessible! 🚀
             });
           }
 
@@ -249,7 +250,7 @@ We appreciate your contribution to making Lean 4 type checking more accessible! 
           });
 
           const allChecksPass = combinedStatus.state === 'success';
-          const hasApprovedReview = pr.data.reviews.some(review => 
+          const hasApprovedReview = pr.data.reviews.some(review =>
             review.state === 'APPROVED' && review.user.type === 'User'
           );
 
@@ -302,15 +303,16 @@ We appreciate your contribution to making Lean 4 type checking more accessible! 
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `## 🎉 PR Successfully Merged!
+              body: |
+              ## 🎉 PR Successfully Merged!
 
-**Statistics:**
-- 📝 **Files changed:** ${stats.changed_files}
-- ➕ **Additions:** ${stats.additions}
-- ➖ **Deletions:** ${stats.deletions}
-- 👤 **Author:** @${stats.author}
-- 🔗 **Merge commit:** \`${stats.merge_commit_sha}\`
+              **Statistics:**
+              - 📝 **Files changed:** ${stats.changed_files}
+              - ➕ **Additions:** ${stats.additions}
+              - ➖ **Deletions:** ${stats.deletions}
+              - 👤 **Author:** @${stats.author}
+              - 🔗 **Merge commit:** `${stats.merge_commit_sha}`
 
-Thank you for your contribution to Ferriprove! 🚀`,
+              Thank you for your contribution to Ferriprove! 🚀
             });
           }

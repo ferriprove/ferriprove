@@ -67,6 +67,7 @@ pre-commit run --all-files
 **Purpose**: Ensures Cargo workspace structure is valid
 
 **Hook Configuration**:
+
 ```yaml
 - id: workspace-validation
   name: workspace validation
@@ -78,6 +79,7 @@ pre-commit run --all-files
 ```
 
 **Usage**:
+
 ```bash
 # Run manually
 ./scripts/validate-workspace.sh
@@ -87,6 +89,7 @@ pre-commit run workspace-validation --all-files
 ```
 
 **Output**:
+
 ```
 [INFO] Validating Cargo workspace structure...
 [INFO] ✓ Workspace member ferriprove-types exists
@@ -114,6 +117,7 @@ pre-commit run workspace-validation --all-files
 **Purpose**: Ensures adequate documentation coverage
 
 **Hook Configuration**:
+
 ```yaml
 - id: documentation-coverage
   name: documentation coverage
@@ -125,6 +129,7 @@ pre-commit run workspace-validation --all-files
 ```
 
 **Usage**:
+
 ```bash
 # Run manually
 ./scripts/check-doc-coverage.sh
@@ -140,6 +145,7 @@ pre-commit run documentation-coverage --all-files
 **Purpose**: Provides unified interface to development tools
 
 **Hook Configuration**:
+
 ```yaml
 - id: dev-script-check
   name: dev script check
@@ -151,6 +157,7 @@ pre-commit run documentation-coverage --all-files
 ```
 
 **Usage**:
+
 ```bash
 # Run via pre-commit
 pre-commit run dev-script-check --all-files
@@ -169,11 +176,11 @@ pre-commit run dev-script-check --all-files
 # Run only on specific files
 - id: rust-specific
   files: '\.rs$'
-  
+
 # Run only on configuration files
 - id: config-check
   files: '^Cargo\.toml$|\.yaml$|\.json$'
-  
+
 # Run on all files of a type
 - id: markdown-check
   types: [markdown]
@@ -185,7 +192,7 @@ pre-commit run dev-script-check --all-files
 # Always run (even if no files match)
 - id: always-check
   always_run: true
-  
+
 # Skip on CI (for expensive operations)
 - id: expensive-check
   always_run: false
@@ -293,6 +300,7 @@ touch "$CACHE_FILE"
 ```
 
 **Script**:
+
 ```bash
 #!/bin/bash
 # Process each file passed as argument
@@ -314,6 +322,7 @@ done
 ```
 
 **Script**:
+
 ```bash
 #!/bin/bash
 # Only run if files contain specific patterns
@@ -336,6 +345,7 @@ done
 ```
 
 **Script**:
+
 ```bash
 #!/bin/bash
 # Integrate with external tools like linters, formatters
@@ -395,7 +405,8 @@ bash -x scripts/validate-workspace.sh
 
 **Problem**: `Error: ./scripts/my-script.sh: No such file or directory`
 
-**Solution**: 
+**Solution**:
+
 - Check script path in `.pre-commit-config.yaml`
 - Ensure script exists and is executable
 - Use absolute paths if needed
@@ -405,6 +416,7 @@ bash -x scripts/validate-workspace.sh
 **Problem**: `Error: Permission denied`
 
 **Solution**:
+
 ```bash
 chmod +x scripts/your-script.sh
 ```
@@ -414,6 +426,7 @@ chmod +x scripts/your-script.sh
 **Problem**: Hook fails but no error output
 
 **Solution**:
+
 ```bash
 # Run with verbose output
 pre-commit run --all-files --verbose
@@ -427,6 +440,7 @@ pre-commit run your-hook --all-files --verbose
 **Problem**: Hooks take too long to run
 
 **Solution**:
+
 - Use `always_run: false` for expensive hooks
 - Add caching to scripts
 - Optimize script performance
@@ -484,6 +498,7 @@ Using scripts in pre-commit hooks provides:
 ✅ **Flexibility**: Can be tailored to specific project needs
 
 The Ferriprove project demonstrates several practical examples:
+
 - Workspace structure validation
 - Documentation coverage checking
 - Performance benchmarking
