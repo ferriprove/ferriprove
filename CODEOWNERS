@@ -1,0 +1,20 @@
+# Code owners for ferriprove repository
+# Format: <file pattern> <code owner>
+
+# Default code owner for the entire repository
+* @SHA888
+
+# Specific owners for different components (can be added later)
+# /ferriprove-kernel/ @SHA888
+# /ferriprove-elab/ @SHA888
+# /ferriprove-tactic/ @SHA888
+# /ferriprove-lsp/ @SHA888
+# /ferriprove-cli/ @SHA888
+
+# Documentation
+*.md @SHA888
+
+# Configuration files
+*.toml @SHA888
+*.yaml @SHA888
+*.yml @SHA888

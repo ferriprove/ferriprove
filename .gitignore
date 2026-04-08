@@ -1,0 +1,78 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+.windsurf/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Test output
+/tests/output/
+/benchmarks/output/
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Documentation build
+/docs/build/
+/book/
+
+# Backup files
+*.bak
+*.backup
+
+# Editor files
+*.orig
+*.rej
+
+# Local configuration
+.env.local
+.env.*.local
+
+# Performance profiles
+perf.data*
+*.prof
+
+# Coverage reports
+tarpaulin-report.html
+cobertura.xml
+lcov.info
+
+# Rust analyzer
+.rust-analyzer/
+
+# Debug builds
+/debug/
+
+# Build artifacts
+*.pdb
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Workspace specific
+/ferriprove-kernel/target/
+/ferriprove-elab/target/
+/ferriprove-tactic/target/
+/ferriprove-lsp/target/
+/ferriprove-cli/target/
