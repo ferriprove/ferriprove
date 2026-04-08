@@ -7,12 +7,14 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ### Core Type System (ferriprove-types)
 
 #### [A-1] Expr Representation
+
 - All `Expr` variants are well-formed
 - No circular references in `Expr` trees
 - `Level` values are finite and well-founded
 - `Name` values are properly interned and unique
 
 #### [A-2] Memory Safety
+
 - No memory corruption in `Expr` manipulation
 - Proper bounds checking on all array/vector access
 - No data races in concurrent access patterns
@@ -20,12 +22,14 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ### Export Parser (ferriprove-export)
 
 #### [B-1] NDJSON Format Validation
+
 - Input follows the lean4export specification exactly
 - All required fields are present and valid
 - No malformed UTF-8 sequences in string fields
 - Forward references are resolved correctly
 
 #### [B-2] Reconstruction Correctness
+
 - Reconstructed `Expr` trees match the original Lean terms
 - Level substitution preserves typing
 - Name resolution is consistent across the entire export
@@ -34,30 +38,35 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ### Kernel Type Checker (ferriprove-kernel)
 
 #### [C-1] Environment Invariants
+
 - All declarations in the environment are well-typed
 - No duplicate names in the environment
 - Inductive types are properly formed (positivity, strict positivity)
 - Recursive definitions are well-founded
 
 #### [C-2] Reduction Engine
+
 - `whnf` is strongly normalizing on well-typed terms
 - All reduction rules preserve typing
 - No infinite loops in reduction
 - Beta reduction is implemented correctly
 
 #### [C-3] Type Inference
+
 - `infer_type` returns the correct principal type
 - Type checking is decidable for all well-formed terms
 - No false positives in type checking
 - Error messages are sound (only reported for actual errors)
 
 #### [C-4] Definitional Equality
+
 - `def_eq` is reflexive, symmetric, and transitive
 - `def_eq` respects conversion rules
 - No false positives in definitional equality
 - Conversion is decidable
 
 #### [C-5] Inductive Types
+
 - Inductive type formation rules are enforced
 - Constructor arguments are correctly typed
 - Recursor principles are correctly generated
@@ -66,12 +75,14 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ### Elaborator (ferriprove-elab)
 
 #### [D-1] Implicit Arguments
+
 - Implicit argument inference is sound
 - No incorrect implicit argument synthesis
 - Type class resolution is terminating
 - Instance search is sound
 
 #### [D-2] Unification
+
 - Higher-order unification is sound
 - No incorrect unification solutions
 - Unification is terminating on well-typed terms
@@ -80,6 +91,7 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ### Tactic Engine (ferriprove-tactic)
 
 #### [E-1] Tactic Correctness
+
 - All tactics preserve soundness
 - No tactic can produce invalid proofs
 - Tactic state transitions are well-defined
@@ -88,27 +100,33 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ## Formal Verification Status
 
 ### Verified Components
+
 - None yet (target for M1-I)
 
 ### Aeneas Translation Status
+
 - Not started (planned for M1-I)
 
 ### Lean4Lean Integration
+
 - Not started (planned for M1-I)
 
 ## Soundness Bug Process
 
 ### Classification
+
 - **P0**: Potential false positive in kernel
 - **P1**: Soundness issue in non-kernel components
 - **P2**: Performance issues affecting soundness checks
 
 ### Response Time
+
 - **P0**: Immediate response, fix within 24 hours
 - **P1**: Response within 48 hours, fix within 1 week
 - **P2**: Response within 1 week, fix in next release
 
 ### Verification Requirements
+
 - All P0 fixes must include regression tests
 - P0 fixes require formal verification when possible
 - All soundness fixes must be reviewed by multiple maintainers
@@ -116,6 +134,7 @@ This document lists all soundness assumptions for the Ferriprove kernel. Soundne
 ## Testing Strategy
 
 ### Property-Based Testing
+
 ```rust
 // Example property test
 #[quickcheck]
@@ -125,11 +144,13 @@ fn def_eq_reflexivity(expr: Expr) -> bool {
 ```
 
 ### Regression Testing
+
 - All historical soundness bugs have regression tests
 - Arena test suite runs on every PR
 - Mathlib compatibility tests on every release
 
 ### Formal Verification
+
 - Kernel functions translated to Lean via Aeneas
 - Soundness proofs checked against Lean4Lean
 - All kernel properties formally verified
@@ -137,11 +158,13 @@ fn def_eq_reflexivity(expr: Expr) -> bool {
 ## External Dependencies
 
 ### Trusted Dependencies
+
 - `std` - Rust standard library (audited)
 - `indexmap` - Ordered hash map (audited, no unsafe)
 - `hashbrown` - Hash table implementation (audited)
 
 ### Untrusted Dependencies
+
 - All parsing dependencies (treated as untrusted)
 - All LSP dependencies (treated as untrusted)
 - All CLI dependencies (treated as untrusted)
@@ -176,14 +199,17 @@ Soundness bugs should be reported via GitHub issues with the `soundness` label a
 For P0 issues, also contact: **soundness@ferriprove.org** (future)
 
 ### Current Contact Channel
+
 - **X (Twitter)**: @ks_sha888 - Current primary contact method
 
 ## Soundness Team
 
 The Ferriprove soundness team can be contacted at:
+
 - **@ks_sha888** (Twitter) - Soundness bugs and concerns
 - GitHub Issues - General soundness questions
 
 ### Future Contact Methods (Planned)
+
 - **soundness@ferriprove.org** - Soundness bugs and concerns (future)
 - **maintainers@ferriprove.org** - General soundness questions (future)

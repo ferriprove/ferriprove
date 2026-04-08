@@ -1,0 +1,150 @@
+# Modern pre-commit configuration for Ferriprove
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # Built-in hooks from pre-commit
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # Basic file checks
+      - id: trailing-whitespace
+        description: Trim trailing whitespace
+      - id: end-of-file-fixer
+        description: Ensure files end with newline
+      - id: check-yaml
+        description: Check YAML syntax
+      - id: check-toml
+        description: Check TOML syntax
+      - id: check-json
+        description: Check JSON syntax
+      - id: check-merge-conflict
+        description: Check for merge conflict markers
+      - id: check-case-conflict
+        description: Check for case conflicts
+      - id: check-added-large-files
+        description: Prevent large files from being committed
+        args: ['--maxkb=1000']
+      - id: check-executables-have-shebangs
+        description: Check executables have shebangs
+      - id: check-shebang-scripts-are-executable
+        description: Check shebang scripts are executable
+
+  # Rust-specific hooks
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+        description: Format Rust code with rustfmt
+      - id: clippy
+        description: Run clippy lints
+        args: ['--all-targets', '--all-features', '--', '-D', 'warnings']
+      - id: cargo-check
+        description: Check if Rust code compiles
+        args: ['--all-targets', '--all-features']
+
+  # Security and dependency checks
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+    rev: v1.3.2
+    hooks:
+      - id: python-safety-dependencies-check
+        description: Check Python dependencies for security vulnerabilities
+
+  # Documentation checks
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
+        description: Check Markdown files for style issues
+        args: ['--fix']
+        exclude: 'LICENSE'
+
+
+  # Commit message checks
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.10.0
+    hooks:
+      - id: commitizen
+        description: Check commit message follows conventional format
+        stages: [commit-msg]
+
+  # Performance and optimization checks
+  - repo: local
+    hooks:
+      - id: cargo-test
+        name: cargo test
+        description: Run cargo test to ensure all tests pass
+        entry: cargo test
+        language: system
+        types: [rust]
+        pass_filenames: false
+        always_run: true
+
+      - id: cargo-doc
+        name: cargo doc
+        description: Check if documentation builds without warnings
+        entry: cargo doc --no-deps --document-private-items
+        language: system
+        types: [rust]
+        pass_filenames: false
+        always_run: true
+
+      - id: cargo-audit
+        name: cargo audit
+        description: Check for security vulnerabilities in dependencies
+        entry: cargo audit
+        language: system
+        types: [rust]
+        pass_filenames: false
+        always_run: true
+
+      - id: cargo-deny
+        name: cargo deny
+        description: Check licenses and dependencies with cargo-deny
+        entry: cargo deny check
+        language: system
+        types: [rust]
+        pass_filenames: false
+        always_run: true
+
+      # Custom script hooks examples
+      - id: dev-script-check
+        name: dev script check
+        description: Check if dev script is working correctly
+        entry: ./scripts/dev.sh check
+        language: script
+        pass_filenames: false
+        always_run: false
+
+      - id: workspace-validation
+        name: workspace validation
+        description: Validate Cargo workspace structure
+        entry: ./scripts/validate-workspace.sh
+        language: script
+        files: '^Cargo\.toml$|^.*/Cargo\.toml$'
+        pass_filenames: false
+
+      - id: documentation-coverage
+        name: documentation coverage
+        description: Check documentation coverage for Rust code
+        entry: ./scripts/check-doc-coverage.sh
+        language: script
+        types: [rust]
+        pass_filenames: false
+
+# Global configuration
+default_language_version:
+  python: python3
+
+# CI configuration
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: [cargo-audit, cargo-deny]
+  submodules: false

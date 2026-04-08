@@ -1,0 +1,32 @@
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+tag_format = "v$version"
+
+[[tool.commitizen.bump_map]]
+message = "^feat"
+bump_type = "minor"
+
+[[tool.commitizen.bump_map]]
+message = "^fix"
+bump_type = "patch"
+
+[[tool.commitizen.bump_map]]
+message = "^BREAKING CHANGE"
+bump_type = "major"
+
+[[tool.commitizen.bump_map]]
+message = "^[^a-zA-Z]+"
+bump_type = "patch"
+
+[tool.commitizen.bump_pattern]
+only_patch = "^chore\\(.*\\):.*|^refactor\\(.*\\):.*|^perf\\(.*\\):.*|^test\\(.*\\):.*|^ci\\(.*\\):.*|^build\\(.*\\):.*|^docs\\(.*\\):.*|^style\\(.*\\):.*"
+
+[tool.commitizen.changelog_pattern]
+feature = "^feat"
+bug_fix = "^fix"
+breaking_change = "^BREAKING CHANGE"
+
+[tool.commitizen.settings]
+major_version_zero = true
+tag_format = "v$version"

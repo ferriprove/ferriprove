@@ -1,5 +1,5 @@
 //! Ferriprove LSP Server
-//! 
+//!
 //! Lean 4-compatible Language Server Protocol server.
 //! This is a placeholder package to reserve the crate name.
 

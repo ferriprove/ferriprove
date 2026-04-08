@@ -2,7 +2,7 @@
 resolver = "3"
 members = [
     "ferriprove-types",
-    "ferriprove-export", 
+    "ferriprove-export",
     "ferriprove-kernel",
     "ferriprove-elab",
     "ferriprove-tactic",

@@ -21,9 +21,11 @@ Ferriprove distinguishes between **security vulnerabilities** and **soundness bu
 For security vulnerabilities, please contact: **security@ferriprove.org** (future)
 
 ### Current Contact Channel
+
 - **X (Twitter)**: @ks_sha888 - Current primary contact method
 
 Please include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -66,6 +68,7 @@ For soundness bugs, please use the regular GitHub issue tracker with the `soundn
 ### Threat Model
 
 #### In Scope
+
 - Remote code execution via malformed input
 - Denial of service attacks
 - Memory corruption vulnerabilities
@@ -73,6 +76,7 @@ For soundness bugs, please use the regular GitHub issue tracker with the `soundn
 - Side-channel attacks in cryptographic operations
 
 #### Out of Scope
+
 - Soundness bugs (handled separately as P0 issues)
 - Performance degradation (handled as regular bugs)
 - Social engineering attacks
@@ -113,6 +117,7 @@ cargo outdated
 ### Parser Security
 
 The `ferriprove-export` crate handles external NDJSON files and includes:
+
 - Input size limits
 - Memory usage bounds
 - Comprehensive error handling
@@ -121,6 +126,7 @@ The `ferriprove-export` crate handles external NDJSON files and includes:
 ### LSP Security
 
 The `ferriprove-lsp` crate includes:
+
 - Input validation for all LSP messages
 - Resource limits for large files
 - Safe path handling for file operations
@@ -129,6 +135,7 @@ The `ferriprove-lsp` crate includes:
 ### CLI Security
 
 The `ferriprove-cli` crate includes:
+
 - Safe file path handling
 - Resource limits for large inputs
 - No network access by default
@@ -154,10 +161,12 @@ The `ferriprove-cli` crate includes:
 ## Security Team
 
 The Ferriprove security team can be contacted at:
+
 - **@ks_sha888** (Twitter) - Security vulnerabilities
 - GitHub Issues - General security questions
 
 ### Future Contact Methods (Planned)
+
 - **security@ferriprove.org** - Security vulnerabilities (future)
 - **maintainers@ferriprove.org** - General security questions (future)
 

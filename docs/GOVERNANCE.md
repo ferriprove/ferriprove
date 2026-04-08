@@ -3,18 +3,21 @@
 ## Project Leadership
 
 ### Maintainers
+
 - **@SHA888** - Project lead, kernel architecture
 - Additional maintainers will be added as the project grows
 
 ### Roles and Responsibilities
 
 #### Project Lead (@SHA888)
+
 - Overall project direction and vision
 - Kernel architecture and soundness oversight
 - Release management and versioning
 - Community coordination and conflict resolution
 
 #### Maintainers
+
 - Code review and quality assurance
 - Issue triage and prioritization
 - Documentation maintenance
@@ -23,17 +26,20 @@
 ## Decision Making
 
 ### Technical Decisions
+
 - **Kernel changes**: Require project lead approval
 - **API changes**: Require maintainer consensus
 - **Performance changes**: Require benchmark validation
 - **Bug fixes**: Can be merged by any maintainer
 
 ### Process Decisions
+
 - **Tooling changes**: Require maintainer discussion
 - **Documentation changes**: Can be merged by any maintainer
 - **Community guidelines**: Require project lead approval
 
 ### Release Decisions
+
 - **Patch releases**: Can be made by any maintainer
 - **Minor releases**: Require maintainer consensus
 - **Major releases**: Require project lead approval
@@ -44,7 +50,7 @@
 
 #### Why Dual License?
 
-1. **Ecosystem Compatibility**: 
+1. **Ecosystem Compatibility**:
    - Lean 4 uses Apache-2.0
    - nanoda_lib uses MIT
    - Rust ecosystem prefers permissive licenses
@@ -74,6 +80,7 @@ All dependencies are compatible with MIT OR Apache-2.0:
 ### Who Can Contribute?
 
 Anyone can contribute! We welcome:
+
 - Code contributions
 - Documentation improvements
 - Bug reports and feature requests
@@ -116,6 +123,7 @@ We follow [Semantic Versioning](https://semver.org/):
 ### Release Criteria
 
 Each milestone must meet:
+
 - All acceptance tests pass
 - Documentation is complete
 - Performance benchmarks meet targets
@@ -165,11 +173,13 @@ We follow the [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-
 ## Security and Soundness
 
 ### Security Team
+
 - **@ks_sha888** (Twitter) - Security vulnerabilities
 - Confidential reporting and coordinated disclosure
 - Security advisories and patches
 
 ### Soundness Team
+
 - **@ks_sha888** (Twitter) - Soundness bugs
 - P0 bug response and fixes
 - Formal verification oversight
@@ -177,12 +187,14 @@ We follow the [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-
 ## Financial Policy
 
 ### Funding
+
 - **Open source**: No commercial funding required
 - **Infrastructure**: GitHub provides free hosting
 - **Domains**: Project maintains ferriprove.org
 - **Services**: No paid services currently
 
 ### Expenses
+
 - **Domain registration**: ~$15/year
 - **Infrastructure**: $0 (GitHub free tier)
 - **Legal**: $0 (permissive licenses)
@@ -191,12 +203,14 @@ We follow the [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-
 ## Legal Structure
 
 ### Current Status
+
 - **Unincorporated**: Individual project
 - **Liability**: Project lead assumes responsibility
 - **Intellectual Property**: Maintained by contributors
 - **Trademarks**: "Ferriprove" name protected by use
 
 ### Future Considerations
+
 - **Foundation**: Possible non-profit structure
 - **Trademark**: Formal registration if needed
 - **Liability**: Limited liability entity if required
@@ -214,6 +228,7 @@ We follow the [Rust Code of Conduct](https://www.rust-lang.org/policies/code-of-
 ### License Changes
 
 License changes require:
+
 - **Supermajority**: 2/3 of all contributors
 - **Notice**: 90-day notice period
 - **Migration**: Clear migration path for existing code
@@ -222,22 +237,27 @@ License changes require:
 ## Contact Information
 
 ### General Inquiries
+
 - **GitHub Issues**: Public questions and discussions
 - **GitHub Discussions**: Community conversations
 - **Twitter**: @ks_sha888
 
 ### Urgent Matters
+
 - **Security**: security@ferriprove.org (future)
 - **Soundness**: soundness@ferriprove.org (future)
 - **Legal**: legal@ferriprove.org (future)
 
 ### Current Contact Channel
+
 - **X (Twitter)**: @ks_sha888 - Current primary contact method
 
 ### Future Contact Methods (Planned)
+
 - **General**: maintainers@ferriprove.org (future)
 
 ### Project Lead
+
 - **GitHub**: @SHA888
 - **Email**: Available to maintainers and security team
 

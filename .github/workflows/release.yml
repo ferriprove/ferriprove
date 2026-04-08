@@ -154,12 +154,11 @@ jobs:
     - name: Sign release assets
       env:
         COSIGN_EXPERIMENTAL: 1
+        COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
       run: |
         cosign sign --yes \
           --key env://COSIGN_PRIVATE_KEY \
           ${{ needs.create-release.outputs.upload_url }}
-      env:
-        COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
 
   generate-sbom:
     name: Generate SBOM
