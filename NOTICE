@@ -1,0 +1,64 @@
+Ferriprove
+Copyright 2026 Ferriprove Contributors
+
+This product includes software developed by the following projects:
+
+---
+
+Lean 4
+Copyright 2021-2024 Lean FRO, LLC
+License: Apache-2.0
+https://github.com/leanprover/lean4
+
+Ferriprove is designed to be compatible with Lean 4's kernel language
+and type theory. The reference implementation defines the target semantics
+that Ferriprove aims to match.
+
+---
+
+nanoda_lib
+Copyright 2021-2024 ammkrn
+License: MIT
+https://github.com/ammkrn/nanoda_lib
+
+Ferriprove's design and implementation references nanoda_lib as prior art
+for Rust-based Lean kernel checking. The project serves as an audit baseline
+for Ferriprove's kernel implementation.
+
+---
+
+Lean4Lean
+Copyright 2021-2024 digama0
+License: Apache-2.0
+https://github.com/digama0/lean4lean
+
+Ferriprove uses Lean4Lean as the proof oracle for formal verification
+of the pure kernel via Aeneas translation. Lean4Lean provides the
+metatheory that Ferriprove's soundness proofs are checked against.
+
+---
+
+lean-kernel-arena
+Copyright 2021-2024 Lean FRO, LLC
+License: Apache-2.0
+https://github.com/leanprover/lean-kernel-arena
+
+Ferriprove participates in the kernel arena as an external checker.
+The arena provides the test corpus that Ferriprove validates against.
+
+---
+
+Aeneas
+Copyright 2021-2024 AeneasVerif
+License: Apache-2.0
+https://github.com/AeneasVerif/aeneas
+
+Ferriprove uses Aeneas to translate its pure Rust kernel to Lean for
+formal verification. This enables soundness proofs to be checked against
+Lean4Lean's metatheory.
+
+---
+
+The Ferriprove project is grateful to all contributors to the Lean ecosystem
+for their work on dependent type theory, kernel design, and formal verification
+tools that make this project possible.
