@@ -151,28 +151,28 @@ The foundation is now complete and ready for actual kernel development work.
 > **Gate:** All arena tests pass. Mathlib typecheck clean. Performance within 2× C++ kernel.
 > **SemVer:** `v0.1.0` — `ferriprove-types`, `ferriprove-export`, `ferriprove-kernel` published to crates.io.
 
-### M1-A: Term Representation (`ferriprove-types`)
+### M1-A: Term Representation (`ferriprove-types`) ✅ COMPLETE
 
-- [ ] **M1-A-1** Define core `Expr` type
-  - [ ] M1-A-1.1 `Expr` enum: `Var(usize)`, `Sort(Level)`, `Const(Name, Vec<Level>)`, `App`, `Lam`, `Pi`, `Let`, `Lit(Literal)`, `FVar(FVarId)`, `MVar(MVarId)`
-  - [ ] M1-A-1.2 Document variable convention choice (locally nameless) in source
-  - [ ] M1-A-1.3 `Level` enum: `Zero`, `Succ`, `Max`, `IMax`, `Param(Name)`, `MVar(LevelMVarId)`
-  - [ ] M1-A-1.4 `Name` type: hierarchical dotted names, interned by content
-  - [ ] M1-A-1.5 `BinderInfo` enum: `Default`, `Implicit`, `StrictImplicit`, `InstImplicit`
-  - [ ] M1-A-1.6 `Literal` enum: `Nat(u64)`, `String(Arc<str>)`
-- [ ] **M1-A-2** Implement term interning
-  - [ ] M1-A-2.1 Hash-cons `Expr` by structural content → stable `ExprId`
-  - [ ] M1-A-2.2 Arena storage: `bumpalo` bump allocator per elaboration session
-  - [ ] M1-A-2.3 Intern table: `dashmap` for concurrent read access during parallel elab
-  - [ ] M1-A-2.4 Pointer-equality fast path in `def_eq`: identical `ExprId` → equal
-  - [ ] M1-A-2.5 Benchmark: intern lookup overhead vs naive `Arc::clone` baseline
-- [ ] **M1-A-3** Implement `Expr` utility functions (unit-tested each)
-  - [ ] M1-A-3.1 `subst(expr, replacement, depth)` — capture-avoiding substitution
-  - [ ] M1-A-3.2 `lift_vars(expr, n)` — de Bruijn index lifting by n
-  - [ ] M1-A-3.3 `has_fvar(expr, id) → bool` — occurrence check
-  - [ ] M1-A-3.4 `abstract_fvars(expr, fvars) → Expr` — replace FVars with bound vars
-  - [ ] M1-A-3.5 `instantiate(expr, args) → Expr` — substitute bound vars with args
-  - [ ] M1-A-3.6 `expr_size(expr) → usize` — structural size (used in termination argument)
+- [x] **M1-A-1** Define core `Expr` type
+  - [x] M1-A-1.1 `Expr` enum: `Var(usize)`, `Sort(Level)`, `Const(Name, Vec<Level>)`, `App`, `Lam`, `Pi`, `Let`, `Lit(Literal)`, `FVar(FVarId)`, `MVar(MVarId)`
+  - [x] M1-A-1.2 Document variable convention choice (locally nameless) in source
+  - [x] M1-A-1.3 `Level` enum: `Zero`, `Succ`, `Max`, `IMax`, `Param(Name)`, `MVar(LevelMVarId)`
+  - [x] M1-A-1.4 `Name` type: hierarchical dotted names, interned by content
+  - [x] M1-A-1.5 `BinderInfo` enum: `Default`, `Implicit`, `StrictImplicit`, `InstImplicit`
+  - [x] M1-A-1.6 `Literal` enum: `Nat(u64)`, `String(Arc<str>)`
+- [x] **M1-A-2** Implement term interning
+  - [x] M1-A-2.1 Hash-cons `Expr` by structural content → stable `ExprId`
+  - [x] M1-A-2.2 Arena storage: `bumpalo` bump allocator per elaboration session
+  - [x] M1-A-2.3 Intern table: `dashmap` for concurrent read access during parallel elab
+  - [x] M1-A-2.4 Pointer-equality fast path in `def_eq`: identical `ExprId` → equal
+  - [x] M1-A-2.5 Benchmark: intern lookup overhead vs naive `Arc::clone` baseline
+- [x] **M1-A-3** Implement `Expr` utility functions (unit-tested each)
+  - [x] M1-A-3.1 `subst(expr, replacement, depth)` — capture-avoiding substitution
+  - [x] M1-A-3.2 `lift_vars(expr, n)` — de Bruijn index lifting by n
+  - [x] M1-A-3.3 `has_fvar(expr, id) → bool` — occurrence check
+  - [x] M1-A-3.4 `abstract_fvars(expr, fvars) → Expr` — replace FVars with bound vars
+  - [x] M1-A-3.5 `instantiate(expr, args) → Expr` — substitute bound vars with args
+  - [x] M1-A-3.6 `expr_size(expr) → usize` — structural size (used in termination argument)
 
 ### M1-B: `lean4export` Parser (`ferriprove-export`)
 

@@ -8,3 +8,7 @@ repository.workspace = true
 authors.workspace = true
 
 [dependencies]
+rustc-hash = "1.1.0"
+serde = { version = "1.0.228", features = ["derive"] }
+bumpalo = "3.16.0"
+dashmap = "6.1.0"
