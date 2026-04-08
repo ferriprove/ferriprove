@@ -1,0 +1,316 @@
+name: PR Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [ main, develop ]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches: [ main, develop ]
+
+jobs:
+  # PR Validation and Status Updates
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install pre-commit
+      run: pip install pre-commit
+
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-pr-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run pre-commit on PR
+      run: |
+        pre-commit run --all-files
+
+    - name: Run cargo test
+      run: cargo test --workspace --all-features
+
+    - name: Check PR size
+      run: |
+        CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}..HEAD | wc -l)
+        echo "PR changed $CHANGED_FILES files"
+        
+        if [ $CHANGED_FILES -gt 50 ]; then
+          echo "::warning::Large PR detected ($CHANGED_FILES files). Consider breaking into smaller PRs."
+        fi
+
+    - name: Check for breaking changes
+      run: |
+        # Check for common breaking change patterns
+        if git diff --name-only origin/${{ github.base_ref }}..HEAD | grep -E "(Cargo\.toml|src/lib\.rs)"; then
+          echo "::notice::Potential breaking changes detected in Cargo.toml or lib.rs"
+        fi
+
+    - name: Validate commit messages
+      run: |
+        # Check commit messages for conventional format
+        COMMITS=$(git rev-list origin/${{ github.base_ref }}..HEAD)
+        
+        for commit in $COMMITS; do
+          MESSAGE=$(git log --format=%B -n 1 $commit)
+          if ! echo "$MESSAGE" | grep -E "^(feat|fix|docs|style|refactor|test|chore|ci|build)(\(.+\))?: "; then
+            echo "::warning::Commit $commit does not follow conventional commit format"
+          fi
+        done
+
+  # PR Labels and Milestone Management
+  pr-metadata:
+    name: PR Metadata Management
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: read
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Auto-label PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+
+          const labels = [];
+          const files = pr.data.changed_files;
+
+          // Auto-label based on changed files
+          if (files.some(f => f.filename.includes('src/') && f.filename.includes('.rs'))) {
+            labels.push('type: code');
+          }
+          if (files.some(f => f.filename.includes('docs/') || f.filename.includes('README.md'))) {
+            labels.push('type: documentation');
+          }
+          if (files.some(f => f.filename.includes('test') || f.filename.includes('tests/'))) {
+            labels.push('type: tests');
+          }
+          if (files.some(f => f.filename.includes('.github/workflows/'))) {
+            labels.push('type: ci');
+          }
+          if (files.some(f => f.filename.includes('Cargo.toml') || f.filename.includes('Cargo.lock'))) {
+            labels.push('type: dependencies');
+          }
+
+          // Size-based labeling
+          if (pr.data.additions + pr.data.deletions > 500) {
+            labels.push('size: large');
+          } else if (pr.data.additions + pr.data.deletions > 100) {
+            labels.push('size: medium');
+          } else {
+            labels.push('size: small');
+          }
+
+          // Add labels if any were determined
+          if (labels.length > 0) {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: labels,
+            });
+          }
+
+    - name: Set milestone based on content
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+
+          // Get available milestones
+          const { data: milestones } = await github.rest.issues.listMilestones({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+          });
+
+          if (milestones.length > 0) {
+            // Use the most recent milestone for new PRs
+            const latestMilestone = milestones[0];
+            
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              milestone: latestMilestone.number,
+            });
+          }
+
+  # PR Welcome Message for First-time Contributors
+  pr-welcome:
+    name: Welcome First-time Contributors
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    permissions:
+      pull-requests: write
+    steps:
+    - name: Check if first-time contributor
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+
+          const { data: userPrs } = await github.rest.pulls.list({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            creator: pr.data.user.login,
+            state: 'all',
+          });
+
+          // Check if this is the user's first PR
+          if (userPrs.length === 1) {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `🎉 **Welcome to Ferriprove!** 
+
+Thank you for your first pull request! We're excited to have you contribute to our Lean 4 compatible type checker.
+
+## Next Steps:
+1. ✅ Your PR is now being validated by our CI system
+2. 🔍 Our team will review your changes shortly
+3. 📝 Please respond to any review comments
+
+## Development Resources:
+- 📖 [Contributing Guide](https://github.com/ferriprove/ferriprove/blob/main/docs/CONTRIBUTING.md)
+- 🔧 [Development Setup](https://github.com/ferriprove/ferriprove/blob/main/docs/PRECOMMIT.md)
+- 💬 [Discussions](https://github.com/ferriprove/ferriprove/discussions) for questions
+
+## Getting Help:
+- 🐛 [Report Issues](https://github.com/ferriprove/ferriprove/issues)
+- 💭 [Start a Discussion](https://github.com/ferriprove/ferriprove/discussions/new)
+
+We appreciate your contribution to making Lean 4 type checking more accessible! 🚀`,
+            });
+          }
+
+  # PR Merge Readiness Check
+  pr-merge-check:
+    name: Merge Readiness Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
+    permissions:
+      pull-requests: write
+      checks: read
+      statuses: read
+    steps:
+    - name: Check merge readiness
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+
+          // Get combined status
+          const { data: combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: pr.data.head.sha,
+          });
+
+          const allChecksPass = combinedStatus.state === 'success';
+          const hasApprovedReview = pr.data.reviews.some(review => 
+            review.state === 'APPROVED' && review.user.type === 'User'
+          );
+
+          let statusMessage = '';
+          let readyForMerge = false;
+
+          if (allChecksPass && hasApprovedReview) {
+            statusMessage = '✅ **Ready for Merge**';
+            readyForMerge = true;
+          } else if (!allChecksPass) {
+            statusMessage = '❌ **CI Checks Failed** - Please fix failing checks';
+          } else if (!hasApprovedReview) {
+            statusMessage = '⏳ **Awaiting Review** - Needs approval before merge';
+          }
+
+          // Update PR status (this would require a custom status check setup)
+          console.log(`PR Status: ${statusMessage}`);
+          console.log(`Ready for Merge: ${readyForMerge}`);
+
+  # PR Statistics and Reporting
+  pr-stats:
+    name: PR Statistics
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    steps:
+    - name: Generate PR statistics
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+
+          const stats = {
+            merged: pr.data.merged,
+            additions: pr.data.additions,
+            deletions: pr.data.deletions,
+            changed_files: pr.data.changed_files,
+            author: pr.data.user.login,
+            merge_commit_sha: pr.data.merge_commit_sha,
+          };
+
+          console.log('PR Statistics:', JSON.stringify(stats, null, 2));
+
+          // Post summary comment if merged
+          if (pr.data.merged) {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🎉 PR Successfully Merged!
+
+**Statistics:**
+- 📝 **Files changed:** ${stats.changed_files}
+- ➕ **Additions:** ${stats.additions}
+- ➖ **Deletions:** ${stats.deletions}
+- 👤 **Author:** @${stats.author}
+- 🔗 **Merge commit:** \`${stats.merge_commit_sha}\`
+
+Thank you for your contribution to Ferriprove! 🚀`,
+            });
+          }

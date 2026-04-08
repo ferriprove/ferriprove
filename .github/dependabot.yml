@@ -7,28 +7,52 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "SHA888"
-    assignees:
-      - "SHA888"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-
-  # Update GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
     open-pull-requests-limit: 5
     reviewers:
       - "SHA888"
     assignees:
       - "SHA888"
     commit-message:
-      prefix: "chore"
+      prefix: "deps"
       include: "scope"
+    labels:
+      - "type: dependencies"
+      - "dependencies"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      - dependency-name: "lean4"
+      - dependency-name: "elan"
+    groups:
+      rust-security:
+        patterns:
+          - "*"
+        update-types:
+          - "security"
+      rust-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+
+  # Update GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "type: ci"
+      - "dependencies"
 
   # Update Docker dependencies (if added later)
   - package-ecosystem: "docker"
@@ -37,11 +61,33 @@ updates:
       interval: "weekly"
       day: "tuesday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 2
     reviewers:
       - "SHA888"
     assignees:
       - "SHA888"
     commit-message:
-      prefix: "chore"
+      prefix: "deps"
       include: "scope"
+    labels:
+      - "type: dependencies"
+      - "dependencies"
+
+  # Update pip dependencies for Python tools
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "type: dependencies"
+      - "dependencies"
