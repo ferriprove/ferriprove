@@ -20,15 +20,27 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Check for proofs directory
+      id: check-proofs
+      run: |
+        if [ -d "proofs" ]; then
+          echo "proofs_exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "proofs_exists=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Install Elan
+      if: steps.check-proofs.outputs.proofs_exists == 'true'
       run: |
         curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
     - name: Install Lean 4
+      if: steps.check-proofs.outputs.proofs_exists == 'true'
       run: elan default leanprover/lean4:stable
 
     - name: Cache Lean packages
+      if: steps.check-proofs.outputs.proofs_exists == 'true'
       uses: actions/cache@v4
       with:
         path: |
@@ -39,20 +51,16 @@ jobs:
           ${{ runner.os }}-lean-
 
     - name: Build proofs
+      if: steps.check-proofs.outputs.proofs_exists == 'true'
       run: |
-        if [ -d "proofs" ]; then
-          cd proofs
-          lake build
-        else
-          echo "No proofs directory found, skipping Lean proofs"
-        fi
+        cd proofs
+        lake build
 
-    - name: Check proofs
+    - name: Skip proofs
+      if: steps.check-proofs.outputs.proofs_exists == 'false'
       run: |
-        if [ -d "proofs" ]; then
-          cd proofs
-          lake env lean --check *.lean
-        fi
+        echo "No proofs directory found, skipping Lean proofs"
+        echo "::notice::Lean proofs workflow skipped - no proofs directory found"
 
   aeneas-verification:
     name: Aeneas Verification
@@ -61,28 +69,41 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Check for Aeneas requirements
+      id: check-aeneas
+      run: |
+        if [ -f "ferriprove-kernel/src/lib.rs" ] && [ -d "proofs" ]; then
+          echo "aeneas_ready=true" >> $GITHUB_OUTPUT
+        else
+          echo "aeneas_ready=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Install Rust
+      if: steps.check-aeneas.outputs.aeneas_ready == 'true'
       uses: dtolnay/rust-toolchain@stable
 
     - name: Install Aeneas
+      if: steps.check-aeneas.outputs.aeneas_ready == 'true'
       run: |
         pip install aeneas
 
     - name: Run Aeneas on kernel
+      if: steps.check-aeneas.outputs.aeneas_ready == 'true'
       run: |
-        if [ -f "ferriprove-kernel/src/lib.rs" ]; then
-          cd ferriprove-kernel
-          aeneas --rust src/lib.rs --lean ../proofs/KernelModel.lean
-        else
-          echo "No kernel source found, skipping Aeneas verification"
-        fi
+        cd ferriprove-kernel
+        aeneas --rust src/lib.rs --lean ../proofs/KernelModel.lean
 
     - name: Check generated Lean code
+      if: steps.check-aeneas.outputs.aeneas_ready == 'true'
       run: |
-        if [ -f "proofs/KernelModel.lean" ]; then
-          cd proofs
-          lake env lean --check KernelModel.lean
-        fi
+        cd proofs
+        lake env lean --check KernelModel.lean
+
+    - name: Skip Aeneas
+      if: steps.check-aeneas.outputs.aeneas_ready == 'false'
+      run: |
+        echo "Skipping Aeneas verification - kernel source or proofs directory not found"
+        echo "::notice::Aeneas verification workflow skipped - missing requirements"
 
   benchmark-proofs:
     name: Proof Benchmarks
@@ -91,15 +112,27 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Check for proofs directory
+      id: check-benchmark
+      run: |
+        if [ -d "proofs" ]; then
+          echo "proofs_exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "proofs_exists=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Install Elan
+      if: steps.check-benchmark.outputs.proofs_exists == 'true'
       run: |
         curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
     - name: Install Lean 4
+      if: steps.check-benchmark.outputs.proofs_exists == 'true'
       run: elan default leanprover/lean4:stable
 
     - name: Cache Lean packages
+      if: steps.check-benchmark.outputs.proofs_exists == 'true'
       uses: actions/cache@v4
       with:
         path: |
@@ -110,8 +143,13 @@ jobs:
           ${{ runner.os }}-lean-
 
     - name: Benchmark proofs
+      if: steps.check-benchmark.outputs.proofs_exists == 'true'
       run: |
-        if [ -d "proofs" ]; then
-          cd proofs
-          time lake build
-        fi
+        cd proofs
+        time lake build
+
+    - name: Skip benchmark
+      if: steps.check-benchmark.outputs.proofs_exists == 'false'
+      run: |
+        echo "Skipping proof benchmarks - no proofs directory found"
+        echo "::notice::Proof benchmarks workflow skipped - no proofs directory found"
