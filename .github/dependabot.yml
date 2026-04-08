@@ -24,16 +24,21 @@ updates:
       - dependency-name: "lean4"
       - dependency-name: "elan"
     groups:
-      rust-security:
-        patterns:
-          - "*"
-        update-types:
-          - "security"
       rust-major:
         patterns:
           - "*"
         update-types:
           - "major"
+      rust-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+      rust-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
 
   # Update GitHub Actions
   - package-ecosystem: "github-actions"
