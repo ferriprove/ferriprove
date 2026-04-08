@@ -1,0 +1,44 @@
+[workspace]
+resolver = "3"
+members = [
+    "ferriprove-types",
+    "ferriprove-export", 
+    "ferriprove-kernel",
+    "ferriprove-elab",
+    "ferriprove-tactic",
+    "ferriprove-lsp",
+    "ferriprove-cli",
+]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/ferriprove/ferriprove"
+authors = ["Ferriprove Contributors"]
+homepage = "https://ferriprove.org"
+rust-version = "1.75"
+
+[workspace.dependencies]
+# Core types
+ferriprove-types = { path = "ferriprove-types", version = "0.0.1" }
+# Export parser
+ferriprove-export = { path = "ferriprove-export", version = "0.0.1" }
+# Kernel
+ferriprove-kernel = { path = "ferriprove-kernel", version = "0.0.1" }
+# Elaborator
+ferriprove-elab = { path = "ferriprove-elab", version = "0.0.1" }
+# Tactics
+ferriprove-tactic = { path = "ferriprove-tactic", version = "0.0.1" }
+# LSP server
+ferriprove-lsp = { path = "ferriprove-lsp", version = "0.0.1" }
+# CLI
+ferriprove-cli = { path = "ferriprove-cli", version = "0.0.1" }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.bench]
+debug = true

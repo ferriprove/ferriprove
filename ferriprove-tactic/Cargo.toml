@@ -1,10 +1,14 @@
 [package]
 name = "ferriprove-tactic"
-version = "0.0.1"
-edition = "2021"
-license = "MIT OR Apache-2.0"
-description = "Lean 4-compatible tactic engine in Rust (pre-release placeholder)"
-repository = "https://github.com/ferriprove/ferriprove"
-authors = ["Ferriprove Contributors"]
+version.workspace = true
+edition = "2024"
+license.workspace = true
+description = "Lean 4-compatible tactic engine in Rust"
+repository.workspace = true
+authors.workspace = true
 
 [dependencies]
+ferriprove-types = { workspace = true }
+ferriprove-export = { workspace = true }
+ferriprove-kernel = { workspace = true }
+ferriprove-elab = { workspace = true }

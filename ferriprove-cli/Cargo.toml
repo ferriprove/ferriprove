@@ -1,14 +1,20 @@
 [package]
 name = "ferriprove-cli"
-version = "0.0.1"
-edition = "2021"
-license = "MIT OR Apache-2.0"
-description = "Lean 4-compatible type checker CLI in Rust (pre-release placeholder)"
-repository = "https://github.com/ferriprove/ferriprove"
-authors = ["Ferriprove Contributors"]
+version.workspace = true
+edition = "2024"
+license.workspace = true
+description = "Lean 4-compatible type checker CLI in Rust"
+repository.workspace = true
+authors.workspace = true
 
 [[bin]]
 name = "ferriprove"
 path = "src/main.rs"
 
 [dependencies]
+ferriprove-types = { workspace = true }
+ferriprove-export = { workspace = true }
+ferriprove-kernel = { workspace = true }
+ferriprove-elab = { workspace = true }
+ferriprove-tactic = { workspace = true }
+ferriprove-lsp = { workspace = true }
