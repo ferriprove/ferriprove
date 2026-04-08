@@ -34,13 +34,16 @@
 ### M0-A: Repository Setup
 
 - [ ] **M0-A-1** Initialize Cargo workspace
-  - [ ] M0-A-1.1 `cargo new --lib ferriprove-kernel`
-  - [ ] M0-A-1.2 `cargo new --bin ferriprove-cli`
-  - [ ] M0-A-1.3 Set up `[workspace]` in root `Cargo.toml`
-  - [ ] M0-A-1.4 Add workspace members: `ferriprove-kernel`, `ferriprove-cli`, `ferriprove-elab` (stub), `ferriprove-tactic` (stub), `ferriprove-lsp` (stub)
-  - [ ] M0-A-1.5 Set `edition = "2024"` in all crate `Cargo.toml` files
-  - [ ] M0-A-1.6 Write `rust-toolchain.toml` pinned to latest stable
-  - [ ] M0-A-1.7 Write `.cargo/config.toml` (lint config, target defaults)
+  - [ ] M0-A-1.1 `cargo new --lib ferriprove-types`
+  - [ ] M0-A-1.2 `cargo new --lib ferriprove-export`
+  - [ ] M0-A-1.3 `cargo new --lib ferriprove-kernel`
+  - [ ] M0-A-1.4 `cargo new --bin ferriprove-cli`
+  - [ ] M0-A-1.5 Set up `[workspace]` in root `Cargo.toml`
+  - [ ] M0-A-1.6 Add workspace members: `ferriprove-types`, `ferriprove-export`, `ferriprove-kernel`, `ferriprove-elab` (stub), `ferriprove-tactic` (stub), `ferriprove-lsp` (stub), `ferriprove-cli`
+  - [ ] M0-A-1.7 Set `edition = "2024"` in all crate `Cargo.toml` files
+  - [ ] M0-A-1.8 Write `rust-toolchain.toml` pinned to latest stable
+  - [ ] M0-A-1.9 Write `.cargo/config.toml` (lint config, target defaults)
+  - [ ] M0-A-1.10 Verify dependency graph is acyclic: types → export → kernel → elab → tactic → {lsp, cli}
 - [ ] **M0-A-2** Write governance documents
   - [ ] M0-A-2.1 `CONTRIBUTING.md`: code style (rustfmt, clippy config), Conventional Commits, PR process, issue templates
   - [ ] M0-A-2.2 `SECURITY.md`: trust model, soundness bug policy (distinct from security bugs), disclosure process
@@ -125,7 +128,7 @@
 > **Gate:** All arena tests pass. Mathlib typecheck clean. Performance within 2× C++ kernel.
 > **SemVer:** `v0.1.0` — `ferriprove-kernel` published to crates.io.
 
-### M1-A: Term Representation
+### M1-A: Term Representation (`ferriprove-types`)
 
 - [ ] **M1-A-1** Define core `Expr` type
   - [ ] M1-A-1.1 `Expr` enum: `Var(usize)`, `Sort(Level)`, `Const(Name, Vec<Level>)`, `App`, `Lam`, `Pi`, `Let`, `Lit(Literal)`, `FVar(FVarId)`, `MVar(MVarId)`
@@ -148,137 +151,143 @@
   - [ ] M1-A-3.5 `instantiate(expr, args) → Expr` — substitute bound vars with args
   - [ ] M1-A-3.6 `expr_size(expr) → usize` — structural size (used in termination argument)
 
-### M1-B: Environment
+### M1-B: `lean4export` Parser (`ferriprove-export`)
 
-- [ ] **M1-B-1** Define `Declaration` type
-  - [ ] M1-B-1.1 Variants: `Axiom`, `Definition`, `Theorem`, `Opaque`, `Quot`, `Inductive`, `Constructor`, `Recursor`
-  - [ ] M1-B-1.2 Transparency field: `reducible`, `instances`, `default`, `all`
-  - [ ] M1-B-1.3 Universe parameter list per declaration
-  - [ ] M1-B-1.4 `is_definition() → bool`, `is_theorem() → bool` helpers
-- [ ] **M1-B-2** Implement `Environment`
-  - [ ] M1-B-2.1 `HashMap<Name, Declaration>` with O(1) lookup
-  - [ ] M1-B-2.2 `add_declaration(decl) → Result<(), EnvError>` with duplicate name check
-  - [ ] M1-B-2.3 `get_declaration(name, transparency) → Option<&Declaration>`
-  - [ ] M1-B-2.4 Extension protocol for inductive types (add constructors + recursor atomically)
-- [ ] **M1-B-3** Implement `lean4export` NDJSON parser
-  - [ ] M1-B-3.1 Parse all declaration kinds from export format
-  - [ ] M1-B-3.2 Reconstruct `Expr` tree from flat export representation
-  - [ ] M1-B-3.3 Handle forward references (declarations referencing later-defined names)
-  - [ ] M1-B-3.4 Fuzz test parser against malformed/truncated inputs with `cargo-fuzz`
-  - [ ] M1-B-3.5 Unit test: round-trip a small export file, verify env reconstructed correctly
+- [ ] **M1-B-1** Implement NDJSON parser
+  - [ ] M1-B-1.1 Parse all declaration kinds from export format
+  - [ ] M1-B-1.2 Reconstruct `Expr` tree from flat export representation
+  - [ ] M1-B-1.3 Handle forward references (declarations referencing later-defined names)
+  - [ ] M1-B-1.4 Fuzz test parser against malformed/truncated inputs with `cargo-fuzz`
+  - [ ] M1-B-1.5 Unit test: round-trip a small export file, verify env reconstructed correctly
+- [ ] **M1-B-2** Register `ferriprove-export` in lean-kernel-arena
+  - [ ] M1-B-2.1 Confirm arena input format is covered by parser
+  - [ ] M1-B-2.2 Expose `parse_file(path) → Result<Vec<Declaration>, ParseError>` as public API
 
-### M1-C: Reduction Engine (Pure — Aeneas scope)
+### M1-C: Environment (`ferriprove-kernel`)
 
-- [ ] **M1-C-1** Implement `whnf(env, expr) → Expr`
-  - [ ] M1-C-1.1 Beta: `(λx. e) a → e[x := a]`
-  - [ ] M1-C-1.2 Delta: unfold `Definition` by transparency
-  - [ ] M1-C-1.3 Iota: recursor applied to constructor
-  - [ ] M1-C-1.4 Zeta: `let x := v; b → b[x := v]`
-  - [ ] M1-C-1.5 Eta: `λx. f x → f` when `x ∉ fv(f)`
-  - [ ] M1-C-1.6 Nat/String literal arithmetic reduction
-  - [ ] M1-C-1.7 `reduceBool` (flag-gated, excluded from Aeneas path)
-  - [ ] M1-C-1.8 Property test: `whnf(whnf(e)) == whnf(e)` (idempotency)
-- [ ] **M1-C-2** Implement universe level operations
-  - [ ] M1-C-2.1 `level_normalize(l) → Level`
-  - [ ] M1-C-2.2 `level_leq(l1, l2, params) → bool`
-  - [ ] M1-C-2.3 `level_equiv(l1, l2, params) → bool`
-- [ ] **M1-C-3** Implement inductive type reduction
-  - [ ] M1-C-3.1 Simple inductive recursor application
-  - [ ] M1-C-3.2 Mutual inductive recursor application
-  - [ ] M1-C-3.3 Nested inductive types
-  - [ ] M1-C-3.4 `Quot` reduction: `Quot.lift`, `Quot.ind`
-  - [ ] M1-C-3.5 Regression test each case against Lean 4 output
+- [ ] **M1-D-1** Define `Declaration` type
+  - [ ] M1-D-1.1 Variants: `Axiom`, `Definition`, `Theorem`, `Opaque`, `Quot`, `Inductive`, `Constructor`, `Recursor`
+  - [ ] M1-D-1.2 Transparency field: `reducible`, `instances`, `default`, `all`
+  - [ ] M1-D-1.3 Universe parameter list per declaration
+  - [ ] M1-D-1.4 `is_definition() → bool`, `is_theorem() → bool` helpers
+- [ ] **M1-D-2** Implement `Environment`
+  - [ ] M1-D-2.1 `HashMap<Name, Declaration>` with O(1) lookup
+  - [ ] M1-D-2.2 `add_declaration(decl) → Result<(), EnvError>` with duplicate name check
+  - [ ] M1-D-2.3 `get_declaration(name, transparency) → Option<&Declaration>`
+  - [ ] M1-D-2.4 Extension protocol for inductive types (add constructors + recursor atomically)
 
-### M1-D: Type Inference (Pure — Aeneas scope)
+### M1-D: Reduction Engine (Pure — Aeneas scope)
 
-- [ ] **M1-D-1** Define `LocalCtx`
-  - [ ] M1-D-1.1 `push_fvar(name, type, value?) → FVarId`
-  - [ ] M1-D-1.2 `lookup_fvar(id) → Option<LocalDecl>`
-  - [ ] M1-D-1.3 Snapshot/restore interface (for elaborator backtracking)
-- [ ] **M1-D-2** Implement `infer_type(env, ctx, expr) → Result<Expr, TypeError>`
-  - [ ] M1-D-2.1 `Var(i)` → look up in `ctx` by de Bruijn index
-  - [ ] M1-D-2.2 `Sort(l)` → `Sort(Succ(l))`
-  - [ ] M1-D-2.3 `Const(n, levels)` → instantiate declaration type with `levels`
-  - [ ] M1-D-2.4 `App(f, a)` → infer `f`, check it is `Pi`, check `a` against domain
-  - [ ] M1-D-2.5 `Lam(bi, t, b)` → check `t : Sort`, infer `b` in extended ctx
-  - [ ] M1-D-2.6 `Pi(bi, t, b)` → infer sorts of `t` and `b`, compute result sort
-  - [ ] M1-D-2.7 `Let(t, v, b)` → check `v : t`, infer `b` in extended ctx
-  - [ ] M1-D-2.8 `Lit(Nat(_))` → `Nat`
-  - [ ] M1-D-2.9 `FVar(id)` → look up in `ctx` by `FVarId`
-- [ ] **M1-D-3** Implement `check_type(env, ctx, expr, ty) → Result<(), TypeError>`
-  - [ ] M1-D-3.1 Infer actual type
-  - [ ] M1-D-3.2 Call `def_eq` on actual vs expected
-  - [ ] M1-D-3.3 Error messages: include expected type, actual type, expression
+- [ ] **M1-D-1** Implement `whnf(env, expr) → Expr`
+  - [ ] M1-D-1.1 Beta: `(λx. e) a → e[x := a]`
+  - [ ] M1-D-1.2 Delta: unfold `Definition` by transparency
+  - [ ] M1-D-1.3 Iota: recursor applied to constructor
+  - [ ] M1-D-1.4 Zeta: `let x := v; b → b[x := v]`
+  - [ ] M1-D-1.5 Eta: `λx. f x → f` when `x ∉ fv(f)`
+  - [ ] M1-D-1.6 Nat/String literal arithmetic reduction
+  - [ ] M1-D-1.7 `reduceBool` (flag-gated, excluded from Aeneas path)
+  - [ ] M1-D-1.8 Property test: `whnf(whnf(e)) == whnf(e)` (idempotency)
+- [ ] **M1-D-2** Implement universe level operations
+  - [ ] M1-D-2.1 `level_normalize(l) → Level`
+  - [ ] M1-D-2.2 `level_leq(l1, l2, params) → bool`
+  - [ ] M1-D-2.3 `level_equiv(l1, l2, params) → bool`
+- [ ] **M1-D-3** Implement inductive type reduction
+  - [ ] M1-D-3.1 Simple inductive recursor application
+  - [ ] M1-D-3.2 Mutual inductive recursor application
+  - [ ] M1-D-3.3 Nested inductive types
+  - [ ] M1-D-3.4 `Quot` reduction: `Quot.lift`, `Quot.ind`
+  - [ ] M1-D-3.5 Regression test each case against Lean 4 output
 
-### M1-E: Definitional Equality (Pure — Aeneas scope)
+### M1-E: Type Inference (Pure — Aeneas scope)
 
-- [ ] **M1-E-1** Implement `def_eq_pure(env, ctx, t1, t2) → bool`
-  - [ ] M1-E-1.1 Pointer (ExprId) equality fast path
-  - [ ] M1-E-1.2 Reduce both to whnf, then dispatch on head form
-  - [ ] M1-E-1.3 `Sort ~ Sort` → `level_equiv`
-  - [ ] M1-E-1.4 `Const ~ Const` → name equality + all levels equiv
-  - [ ] M1-E-1.5 `App ~ App` → unify function, then argument
-  - [ ] M1-E-1.6 `Lam ~ Lam` → domain equality, extend ctx, body equality
-  - [ ] M1-E-1.7 `Pi ~ Pi` → same as Lam
-  - [ ] M1-E-1.8 `Lam ~ non-Lam` → eta expand non-Lam side, retry
-  - [ ] M1-E-1.9 Proof irrelevance: two terms of `Prop` type are always equal
-  - [ ] M1-E-1.10 Structural equality fallback after all reductions
-  - [ ] M1-E-1.11 Property tests: reflexivity, symmetry
-- [ ] **M1-E-2** Implement `def_eq` cache wrapper (not in Aeneas path)
-  - [ ] M1-E-2.1 `DefEqCache`: `HashMap<(ExprId, ExprId), bool>`
-  - [ ] M1-E-2.2 Lookup before calling `def_eq_pure`, store result after
-  - [ ] M1-E-2.3 `debug_assert` coherence invariant in test builds
-  - [ ] M1-E-2.4 Benchmark: cached vs uncached on Mathlib algebra corpus
+- [ ] **M1-E-1** Define `LocalCtx`
+  - [ ] M1-E-1.1 `push_fvar(name, type, value?) → FVarId`
+  - [ ] M1-E-1.2 `lookup_fvar(id) → Option<LocalDecl>`
+  - [ ] M1-E-1.3 Snapshot/restore interface (for elaborator backtracking)
+- [ ] **M1-E-2** Implement `infer_type(env, ctx, expr) → Result<Expr, TypeError>`
+  - [ ] M1-E-2.1 `Var(i)` → look up in `ctx` by de Bruijn index
+  - [ ] M1-E-2.2 `Sort(l)` → `Sort(Succ(l))`
+  - [ ] M1-E-2.3 `Const(n, levels)` → instantiate declaration type with `levels`
+  - [ ] M1-E-2.4 `App(f, a)` → infer `f`, check it is `Pi`, check `a` against domain
+  - [ ] M1-E-2.5 `Lam(bi, t, b)` → check `t : Sort`, infer `b` in extended ctx
+  - [ ] M1-E-2.6 `Pi(bi, t, b)` → infer sorts of `t` and `b`, compute result sort
+  - [ ] M1-E-2.7 `Let(t, v, b)` → check `v : t`, infer `b` in extended ctx
+  - [ ] M1-E-2.8 `Lit(Nat(_))` → `Nat`
+  - [ ] M1-E-2.9 `FVar(id)` → look up in `ctx` by `FVarId`
+- [ ] **M1-E-3** Implement `check_type(env, ctx, expr, ty) → Result<(), TypeError>`
+  - [ ] M1-E-3.1 Infer actual type
+  - [ ] M1-E-3.2 Call `def_eq` on actual vs expected
+  - [ ] M1-E-3.3 Error messages: include expected type, actual type, expression
 
-### M1-F: Inductive Type Checking
+### M1-F: Definitional Equality (Pure — Aeneas scope)
 
-- [ ] **M1-F-1** Implement inductive declaration validator
-  - [ ] M1-F-1.1 Positivity check: no negative occurrences of inductive in constructors
-  - [ ] M1-F-1.2 Universe level consistency check across all constructors
-  - [ ] M1-F-1.3 Constructor type well-formedness
-  - [ ] M1-F-1.4 Recursor type generation from constructor list
-- [ ] **M1-F-2** Implement `Quot` axioms
-  - [ ] M1-F-2.1 Register `Quot`, `Quot.mk`, `Quot.lift`, `Quot.ind`, `Quot.sound`
-  - [ ] M1-F-2.2 Type-check each axiom against kernel rules
-  - [ ] M1-F-2.3 Implement `Quot` reduction rules in `whnf`
+- [ ] **M1-F-1** Implement `def_eq_pure(env, ctx, t1, t2) → bool`
+  - [ ] M1-F-1.1 Pointer (ExprId) equality fast path
+  - [ ] M1-F-1.2 Reduce both to whnf, then dispatch on head form
+  - [ ] M1-F-1.3 `Sort ~ Sort` → `level_equiv`
+  - [ ] M1-F-1.4 `Const ~ Const` → name equality + all levels equiv
+  - [ ] M1-F-1.5 `App ~ App` → unify function, then argument
+  - [ ] M1-F-1.6 `Lam ~ Lam` → domain equality, extend ctx, body equality
+  - [ ] M1-F-1.7 `Pi ~ Pi` → same as Lam
+  - [ ] M1-F-1.8 `Lam ~ non-Lam` → eta expand non-Lam side, retry
+  - [ ] M1-F-1.9 Proof irrelevance: two terms of `Prop` type are always equal
+  - [ ] M1-F-1.10 Structural equality fallback after all reductions
+  - [ ] M1-F-1.11 Property tests: reflexivity, symmetry
+- [ ] **M1-F-2** Implement `def_eq` cache wrapper (not in Aeneas path)
+  - [ ] M1-F-2.1 `DefEqCache`: `HashMap<(ExprId, ExprId), bool>`
+  - [ ] M1-F-2.2 Lookup before calling `def_eq_pure`, store result after
+  - [ ] M1-F-2.3 `debug_assert` coherence invariant in test builds
+  - [ ] M1-F-2.4 Benchmark: cached vs uncached on Mathlib algebra corpus
 
-### M1-G: Arena Testing
+### M1-G: Inductive Type Checking
 
-- [ ] **M1-G-1** Register Ferriprove in `lean-kernel-arena`
-  - [ ] M1-G-1.1 Write `checkers/ferriprove.yml`
-  - [ ] M1-G-1.2 Implement arena NDJSON input reader in `ferriprove-cli`
-  - [ ] M1-G-1.3 Implement arena output writer
-  - [ ] M1-G-1.4 Run all tutorial tests — all must pass
-  - [ ] M1-G-1.5 Run full arena suite — record pass rate
-- [ ] **M1-G-2** Mathlib corpus test
-  - [ ] M1-G-2.1 Export Mathlib via `lean4export` (latest Mathlib commit)
-  - [ ] M1-G-2.2 Run `ferriprove` typechecker on full export
-  - [ ] M1-G-2.3 Any check failure is a bug — file issue, block release
-  - [ ] M1-G-2.4 Record timing: total and per-declaration percentiles
-  - [ ] M1-G-2.5 Gate: zero failures, total time within 2× C++ kernel
+- [ ] **M1-G-1** Implement inductive declaration validator
+  - [ ] M1-G-1.1 Positivity check: no negative occurrences of inductive in constructors
+  - [ ] M1-G-1.2 Universe level consistency check across all constructors
+  - [ ] M1-G-1.3 Constructor type well-formedness
+  - [ ] M1-G-1.4 Recursor type generation from constructor list
+- [ ] **M1-G-2** Implement `Quot` axioms
+  - [ ] M1-G-2.1 Register `Quot`, `Quot.mk`, `Quot.lift`, `Quot.ind`, `Quot.sound`
+  - [ ] M1-G-2.2 Type-check each axiom against kernel rules
+  - [ ] M1-G-2.3 Implement `Quot` reduction rules in `whnf`
 
-### M1-H: Aeneas Verification Loop
+### M1-H: Arena Testing
 
-- [ ] **M1-H-1** Prepare pure kernel for Aeneas translation
-  - [ ] M1-H-1.1 Audit all pure kernel functions: no `unsafe`, no `Mutex`, no `Arc` mutation
-  - [ ] M1-H-1.2 All pure functions use only owned or `&` types
-  - [ ] M1-H-1.3 Run Aeneas on `ferriprove-kernel` — collect translation errors
-  - [ ] M1-H-1.4 Fix each translation error (document each fix in `proofs/NOTES.md`)
-- [ ] **M1-H-2** Generate Lean functional models via Aeneas
-  - [ ] M1-H-2.1 Translate `whnf` → `proofs/KernelModel.lean`
-  - [ ] M1-H-2.2 Translate `def_eq_pure` → `proofs/KernelModel.lean`
-  - [ ] M1-H-2.3 Translate `infer_type` → `proofs/KernelModel.lean`
-  - [ ] M1-H-2.4 Confirm generated Lean compiles against Lean4Lean metatheory imports
-- [ ] **M1-H-3** Prove soundness theorems in Lean
-  - [ ] M1-H-3.1 `whnf_sound` — whnf preserves typing
-  - [ ] M1-H-3.2 `def_eq_sound` — `def_eq_pure = true → ⊢ t1 ≡ t2`
-  - [ ] M1-H-3.3 `infer_type_sound` — `infer_type = Ok(ty) → ⊢ e : ty`
-  - [ ] M1-H-3.4 `def_eq_terminates` — well-founded on (term_size, reduction_depth)
-  - [ ] M1-H-3.5 `cache_coherent` — cache hit implies `def_eq_pure` agrees
-  - [ ] M1-H-3.6 File any open conjectures (e.g. completeness) as tracked issues
-- [ ] **M1-H-4** Integrate Lean proofs into CI (M0-B-6 prerequisite)
-  - [ ] M1-H-4.1 Proofs build cleanly in CI on every PR touching kernel or proof files
-  - [ ] M1-H-4.2 Any proof regression blocks merge
+- [ ] **M1-H-1** Register Ferriprove in `lean-kernel-arena`
+  - [ ] M1-H-1.1 Write `checkers/ferriprove.yml`
+  - [ ] M1-H-1.2 Implement arena NDJSON input reader in `ferriprove-cli`
+  - [ ] M1-H-1.3 Implement arena output writer
+  - [ ] M1-H-1.4 Run all tutorial tests — all must pass
+  - [ ] M1-H-1.5 Run full arena suite — record pass rate
+- [ ] **M1-H-2** Mathlib corpus test
+  - [ ] M1-H-2.1 Export Mathlib via `lean4export` (latest Mathlib commit)
+  - [ ] M1-H-2.2 Run `ferriprove` typechecker on full export
+  - [ ] M1-H-2.3 Any check failure is a bug — file issue, block release
+  - [ ] M1-H-2.4 Record timing: total and per-declaration percentiles
+  - [ ] M1-H-2.5 Gate: zero failures, total time within 2× C++ kernel
+
+### M1-I: Aeneas Verification Loop
+
+- [ ] **M1-I-1** Prepare pure kernel for Aeneas translation
+  - [ ] M1-I-1.1 Audit all pure kernel functions: no `unsafe`, no `Mutex`, no `Arc` mutation
+  - [ ] M1-I-1.2 All pure functions use only owned or `&` types
+  - [ ] M1-I-1.3 Run Aeneas on `ferriprove-kernel` — collect translation errors
+  - [ ] M1-I-1.4 Fix each translation error (document each fix in `proofs/NOTES.md`)
+- [ ] **M1-I-2** Generate Lean functional models via Aeneas
+  - [ ] M1-I-2.1 Translate `whnf` → `proofs/KernelModel.lean`
+  - [ ] M1-I-2.2 Translate `def_eq_pure` → `proofs/KernelModel.lean`
+  - [ ] M1-I-2.3 Translate `infer_type` → `proofs/KernelModel.lean`
+  - [ ] M1-I-2.4 Confirm generated Lean compiles against Lean4Lean metatheory imports
+- [ ] **M1-I-3** Prove soundness theorems in Lean
+  - [ ] M1-I-3.1 `whnf_sound` — whnf preserves typing
+  - [ ] M1-I-3.2 `def_eq_sound` — `def_eq_pure = true → ⊢ t1 ≡ t2`
+  - [ ] M1-I-3.3 `infer_type_sound` — `infer_type = Ok(ty) → ⊢ e : ty`
+  - [ ] M1-I-3.4 `def_eq_terminates` — well-founded on (term_size, reduction_depth)
+  - [ ] M1-I-3.5 `cache_coherent` — cache hit implies `def_eq_pure` agrees
+  - [ ] M1-I-3.6 File any open conjectures (e.g. completeness) as tracked issues
+- [ ] **M1-I-4** Integrate Lean proofs into CI (M0-B-6 prerequisite)
+  - [ ] M1-I-4.1 Proofs build cleanly in CI on every PR touching kernel or proof files
+  - [ ] M1-I-4.2 Any proof regression blocks merge
 
 ---
 

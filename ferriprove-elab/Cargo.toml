@@ -1,0 +1,10 @@
+[package]
+name = "ferriprove-elab"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Lean 4-compatible elaborator in Rust (pre-release placeholder)"
+repository = "https://github.com/ferriprove/ferriprove"
+authors = ["Ferriprove Contributors"]
+
+[dependencies]

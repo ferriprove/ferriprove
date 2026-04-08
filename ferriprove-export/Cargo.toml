@@ -1,0 +1,10 @@
+[package]
+name = "ferriprove-export"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Lean 4 export NDJSON parser in Rust (pre-release placeholder)"
+repository = "https://github.com/ferriprove/ferriprove"
+authors = ["Ferriprove Contributors"]
+
+[dependencies]
