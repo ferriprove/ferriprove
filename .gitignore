@@ -78,3 +78,6 @@ lcov.info
 /ferriprove-tactic/target/
 /ferriprove-lsp/target/
 /ferriprove-cli/target/
+.skill/
+.cursor/rules/skill-context.md
+.windsurf/rules/skill-context.md

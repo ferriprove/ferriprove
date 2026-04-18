@@ -1,0 +1,19 @@
+[package]
+name = "ferriprove-export-fuzz"
+version = "0.0.0"
+authors = ["Ferriprove Contributors"]
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+ferriprove-export = { path = ".." }
+libfuzzer-sys = "0.4"
+
+[[bin]]
+name = "fuzz_ndjson"
+path = "fuzz_targets/fuzz_ndjson.rs"
+test = false
+doc = false

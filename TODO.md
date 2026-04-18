@@ -181,17 +181,17 @@ The foundation is now complete and ready for actual kernel development work.
     - [x] M1-A-3.5 `instantiate(expr, args) → Expr` — substitute bound vars with args
     - [x] M1-A-3.6 `expr_size(expr) → usize` — structural size (used in termination argument)
 
-### M1-B: `lean4export` Parser (`ferriprove-export`)
+### M1-B: `lean4export` Parser (`ferriprove-export`) ✅ COMPLETE
 
-- [ ] **M1-B-1** Implement NDJSON parser
-    - [ ] M1-B-1.1 Parse all declaration kinds from export format
-    - [ ] M1-B-1.2 Reconstruct `Expr` tree from flat export representation
-    - [ ] M1-B-1.3 Handle forward references (declarations referencing later-defined names)
-    - [ ] M1-B-1.4 Fuzz test parser against malformed/truncated inputs with `cargo-fuzz`
-    - [ ] M1-B-1.5 Unit test: round-trip a small export file, verify env reconstructed correctly
-- [ ] **M1-B-2** Register `ferriprove-export` in lean-kernel-arena
-    - [ ] M1-B-2.1 Confirm arena input format is covered by parser
-    - [ ] M1-B-2.2 Expose `parse_file(path) → Result<Vec<Declaration>, ParseError>` as public API
+- [x] **M1-B-1** Implement NDJSON parser
+    - [x] M1-B-1.1 Parse all declaration kinds from export format (axiom, def, opaque, thm, quot, inductive)
+    - [x] M1-B-1.2 Reconstruct `Expr` tree from flat export representation
+    - [x] M1-B-1.3 Handle forward references (declarations referencing later-defined names) via cycle-detecting resolver
+    - [ ] M1-B-1.4 Fuzz test parser against malformed/truncated inputs with `cargo-fuzz` (deferred to later)
+    - [x] M1-B-1.5 Unit test: round-trip a small export file, verify env reconstructed correctly
+- [x] **M1-B-2** Register `ferriprove-export` in lean-kernel-arena
+    - [x] M1-B-2.1 Confirm arena input format (lean4export NDJSON v3.1.0) is covered by parser
+    - [x] M1-B-2.2 Expose `parse_file(path) → Result<ParserState, ParseError>` and `parse_and_resolve(path) → Result<Vec<ResolvedDeclaration>, ParseError>` as public API
 
 ### M1-C: Environment (`ferriprove-kernel`)
 
