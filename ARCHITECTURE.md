@@ -43,7 +43,7 @@ ferriprove-lsp  ferriprove-cli
 ## Trust Model
 
 | Layer | Trusted? | Consequence of bug |
-|---|---|---|
+| --- | --- | --- |
 | `ferriprove-types` | ✅ Yes | Type corruption — P0, kernel depends on it |
 | `ferriprove-export` | ❌ No | Parse failure, not false proof |
 | `ferriprove-kernel` | ✅ Yes | Soundness hole — P0 |
@@ -374,7 +374,7 @@ ferriprove/
 ## Reference Papers
 
 | Paper | Year | Relevance |
-|---|---|---|
+| --- | --- | --- |
 | de Moura et al., "The Lean Theorem Prover" (CADE-25) | 2015 | Kernel + elaborator spec |
 | de Moura et al., "Elaboration in Dependent Type Theory" | 2015 | Metavar/unification algorithm |
 | Ullrich, de Moura, "Beyond Notations: Hygienic Macro Expansion" (IJCAR) | 2020 | Macro system design |

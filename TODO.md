@@ -674,7 +674,7 @@ The foundation is now complete and ready for actual kernel development work.
 ## SemVer Release Map
 
 | Version | Milestone | Gate |
-|---|---|---|
+| --- | --- | --- |
 | `v0.1.0` | M1 | Kernel parity. Mathlib typechecks. Soundness proved in Lean. |
 | `v0.2.0` | M2 | Elaborator. 50-file Mathlib corpus matches Lean 4 output. |
 | `v0.3.0` | M3 | Core tactics. 1000 Mathlib proofs verified. |

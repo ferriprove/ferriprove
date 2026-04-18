@@ -34,7 +34,7 @@ Add custom scripts to the `local` repo section in `.pre-commit-config.yaml`:
 ### 2. Hook Configuration Options
 
 | Option | Description | Example |
-|--------|-------------|---------|
+| --- | --- | --- |
 | `id` | Unique identifier for the hook | `workspace-validation` |
 | `name` | Display name in output | `Workspace Validation` |
 | `description` | Detailed description | `Validate Cargo workspace structure` |

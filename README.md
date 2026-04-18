@@ -17,7 +17,7 @@ Ferriprove is a ground-up Rust implementation of the Lean 4 type theory stack �
 ## Relationship to Existing Work
 
 | Project | Role in Ferriprove |
-|---|---|
+| --- | --- |
 | [`leanprover/lean4`](https://github.com/leanprover/lean4) | Reference implementation (C++). Defines the target semantics. |
 | [`ammkrn/nanoda_lib`](https://github.com/ammkrn/nanoda_lib) | Existing Rust kernel checker. Audited as prior art in M0. |
 | [`digama0/lean4lean`](https://github.com/digama0/lean4lean) | Lean kernel in Lean. Proof oracle for Ferriprove's soundness proofs. |
@@ -41,7 +41,7 @@ ferriprove/                  (workspace root)
 ## Status
 
 | Milestone | Version | Status |
-|---|---|---|
+| --- | --- | --- |
 | M0: Foundation + audit | pre-release | 🔲 Not started |
 | M1: Kernel parity + verification | `v0.1.0` | 🔲 Not started |
 | M2: Elaborator | `v0.2.0` | 🔲 Not started |
@@ -98,7 +98,7 @@ Candidate: MIT OR Apache-2.0 (Rust convention, compatible with Lean 4's Apache-2
 ## Project Identity
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Name | `ferriprove` |
 | Tagline | Lean-compatible ITP kernel and elaborator in Rust |
 | Rust crates (lib) | `ferriprove-types`, `ferriprove-export`, `ferriprove-kernel`, `ferriprove-elab`, `ferriprove-tactic`, `ferriprove-lsp` |
