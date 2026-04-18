@@ -11,9 +11,13 @@ cargo-fuzz = true
 [dependencies]
 ferriprove-export = { path = ".." }
 libfuzzer-sys = "0.4"
+tempfile = "3"
 
 [[bin]]
 name = "fuzz_ndjson"
 path = "fuzz_targets/fuzz_ndjson.rs"
 test = false
 doc = false
+
+# Make this crate independent from the main workspace
+[workspace]

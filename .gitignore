@@ -81,3 +81,13 @@ lcov.info
 .skill/
 .cursor/rules/skill-context.md
 .windsurf/rules/skill-context.md
+
+# Fuzz testing artifacts
+/fuzz/corpus/
+/fuzz/target/
+/fuzz/crash/
+/fuzz/artifacts/
+**/fuzz/corpus/
+**/fuzz/target/
+**/fuzz/crash/
+**/fuzz/artifacts/
