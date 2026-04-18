@@ -168,16 +168,12 @@ impl Expr {
         Expr::MVar(id, levels)
     }
 
-    /// Check if this expression is a definition
-    pub fn is_definition(&self) -> bool {
-        matches!(self, Expr::Const(_, _))
-    }
-
-    /// Check if this expression is a theorem
-    pub fn is_theorem(&self) -> bool {
-        // In Lean 4, theorems are constants that are not definitions
-        // For now, we'll consider all constants as potential theorems
-        matches!(self, Expr::Const(_, _))
+    /// Get the constant name if this is a constant expression
+    pub fn as_const(&self) -> Option<(&Name, &[Level])> {
+        match self {
+            Expr::Const(name, levels) => Some((name, levels)),
+            _ => None,
+        }
     }
 }
 
@@ -189,13 +185,10 @@ pub mod interning {
     use std::collections::HashMap;
     use std::sync::atomic::{AtomicU32, Ordering};
 
-    /// Global counter for generating unique ExprIds
-    static NEXT_EXPR_ID: AtomicU32 = AtomicU32::new(0);
-
-    /// Generate a new unique ExprId
+    /// Generate a new unique ExprId from a counter
     /// Returns None if we've exhausted the ID space
-    fn next_expr_id() -> Option<ExprId> {
-        let current = NEXT_EXPR_ID.fetch_add(1, Ordering::SeqCst);
+    fn next_expr_id(counter: &AtomicU32) -> Option<ExprId> {
+        let current = counter.fetch_add(1, Ordering::SeqCst);
         // Check for overflow - if we hit u32::MAX, return None
         if current == u32::MAX {
             None
@@ -239,12 +232,14 @@ pub mod interning {
     pub struct ExprInterner {
         /// Arena for storing expressions
         arena: Bump,
-        /// Hash table for structural hashing to ExprId
-        intern_table: HashMap<u64, ExprId>,
+        /// Hash table for structural hashing to ExprId (handles collisions via chaining)
+        intern_table: HashMap<u64, Vec<ExprId>>,
         /// Storage for interned expressions by ExprId
         exprs: HashMap<ExprId, Expr>,
         /// Concurrent read access for parallel elaboration
-        concurrent_table: DashMap<u64, ExprId>,
+        concurrent_table: DashMap<u64, Vec<ExprId>>,
+        /// Per-instance ID counter (fixes bug: global counter caused cross-interner interference)
+        next_id: AtomicU32,
     }
 
     impl ExprInterner {
@@ -255,6 +250,7 @@ pub mod interning {
                 intern_table: HashMap::new(),
                 exprs: HashMap::new(),
                 concurrent_table: DashMap::new(),
+                next_id: AtomicU32::new(0),
             }
         }
 
@@ -262,20 +258,24 @@ pub mod interning {
         pub fn intern(&mut self, expr: Expr) -> Result<InternedExpr, InternError> {
             let hash = self.hash_expr(&expr);
 
-            // Check if already interned (with hash collision handling)
-            if let Some(&existing_id) = self.intern_table.get(&hash) {
-                // Verify actual equality to handle hash collisions
-                if let Some(existing_expr) = self.exprs.get(&existing_id)
-                    && *existing_expr == expr
-                {
-                    return Ok(InternedExpr::new(existing_id));
+            // Check if already interned (with proper hash collision handling)
+            if let Some(ids) = self.intern_table.get(&hash) {
+                // Check all expressions with this hash for equality
+                for &existing_id in ids {
+                    if let Some(existing_expr) = self.exprs.get(&existing_id)
+                        && *existing_expr == expr
+                    {
+                        return Ok(InternedExpr::new(existing_id));
+                    }
                 }
             }
 
             // Allocate new ID and store
-            let id = next_expr_id().ok_or(InternError::ExprIdExhausted)?;
-            self.intern_table.insert(hash, id);
-            self.concurrent_table.insert(hash, id);
+            let id = next_expr_id(&self.next_id).ok_or(InternError::ExprIdExhausted)?;
+
+            // Add to hash table (chain for collision handling)
+            self.intern_table.entry(hash).or_default().push(id);
+            self.concurrent_table.entry(hash).or_default().push(id);
 
             // Store expression in arena
             let expr_clone = self.clone_expr_to_arena(&expr);
@@ -409,12 +409,12 @@ pub mod interning {
                 Expr::Var(idx) => Expr::Var(*idx),
                 Expr::Sort(level) => Expr::Sort(self.clone_level_to_arena(level)),
                 Expr::Const(name, levels) => {
-                    let arena_name: &str = self.arena.alloc_str(name.as_str());
-                    let arena_levels = levels
+                    // Clone levels; Name is already interned via Arc<str>, just clone it
+                    let cloned_levels = levels
                         .iter()
                         .map(|l| self.clone_level_to_arena(l))
                         .collect::<Vec<_>>();
-                    Expr::Const(Name::new(arena_name.to_string()), arena_levels)
+                    Expr::Const(name.clone(), cloned_levels)
                 }
                 Expr::App(f, arg) => {
                     let cloned_f = self.clone_expr_to_arena(f);
@@ -473,8 +473,8 @@ pub mod interning {
                     Level::IMax(Box::new(cloned_l1), Box::new(cloned_l2))
                 }
                 Level::Param(name) => {
-                    let arena_name: &str = self.arena.alloc_str(name.as_str());
-                    Level::Param(Name::new(arena_name.to_string()))
+                    // Name is already interned via Arc<str>, just clone it
+                    Level::Param(name.clone())
                 }
                 Level::MVar(id) => Level::MVar(*id),
             }
@@ -497,6 +497,7 @@ pub mod interning {
             self.intern_table.clear();
             self.exprs.clear();
             self.concurrent_table.clear();
+            self.next_id.store(0, Ordering::SeqCst);
         }
 
         /// Get statistics about the interner
@@ -530,6 +531,7 @@ pub mod utils {
 
     /// Capture-avoiding substitution
     /// Replace bound variable at given depth with replacement expression
+    /// The replacement is lifted when entering binders to avoid variable capture
     pub fn subst(expr: &Expr, replacement: &Expr, depth: usize) -> Expr {
         match expr {
             Expr::Var(idx) => {
@@ -547,18 +549,21 @@ pub mod utils {
             Expr::Lam(binder, domain, body) => Expr::lam(
                 *binder,
                 subst(domain, replacement, depth),
-                subst(body, replacement, depth + 1),
+                // Lift replacement by 1 when entering the binder body
+                subst(body, &lift_vars(replacement, 1), depth + 1),
             ),
             Expr::Pi(binder, domain, codomain) => Expr::pi(
                 *binder,
                 subst(domain, replacement, depth),
-                subst(codomain, replacement, depth + 1),
+                // Lift replacement by 1 when entering the binder body
+                subst(codomain, &lift_vars(replacement, 1), depth + 1),
             ),
             Expr::Let(binder, type_, value, body) => Expr::let_(
                 *binder,
                 subst(type_, replacement, depth),
                 subst(value, replacement, depth),
-                subst(body, replacement, depth + 1),
+                // Lift replacement by 1 when entering the binder body
+                subst(body, &lift_vars(replacement, 1), depth + 1),
             ),
             // These don't contain bound variables, so just clone
             Expr::Sort(_) | Expr::Const(_, _) | Expr::Lit(_) | Expr::FVar(_) | Expr::MVar(_, _) => {
@@ -627,10 +632,12 @@ pub mod utils {
 
     /// Abstract free variables with bound variables
     /// Replace the given free variables with bound variables starting from depth 0
+    /// fvars[0] becomes Var(0), fvars[1] becomes Var(1), etc.
     pub fn abstract_fvars(expr: &Expr, fvars: &[FVarId]) -> Expr {
         let mut result = expr.clone();
-        // Process free variables in reverse order to avoid capture issues
-        for (depth, &fvar_id) in fvars.iter().rev().enumerate() {
+        // Process free variables in order: fvars[0] -> Var(0), fvars[1] -> Var(1)
+        // We go in reverse so that earlier abstractions don't shift the indices for later ones
+        for (depth, &fvar_id) in fvars.iter().enumerate().rev() {
             result = abstract_fvar(&result, fvar_id, depth);
         }
         result
@@ -672,11 +679,13 @@ pub mod utils {
 
     /// Instantiate bound variables with arguments
     /// Replace bound variables starting from depth 0 with the given arguments
+    /// Arguments are lifted to account for binders they are substituted under
     pub fn instantiate(expr: &Expr, args: &[Expr]) -> Expr {
         instantiate_from(expr, args, 0)
     }
 
     /// Instantiate bound variables starting from a specific depth
+    /// Arguments are lifted to avoid variable capture when substituted under binders
     fn instantiate_from(expr: &Expr, args: &[Expr], start_depth: usize) -> Expr {
         if args.is_empty() {
             return expr.clone();
@@ -685,10 +694,15 @@ pub mod utils {
         match expr {
             Expr::Var(idx) => {
                 if *idx >= start_depth && *idx < start_depth + args.len() {
-                    args[*idx - start_depth].clone()
+                    // Found a variable to replace - lift the argument by the current depth
+                    // to account for any binders we're under
+                    let arg_idx = *idx - start_depth;
+                    lift_vars(&args[arg_idx], start_depth)
                 } else if *idx >= start_depth + args.len() {
+                    // Variable above the replaced range - shift down
                     Expr::Var(idx - args.len())
                 } else {
+                    // Variable below the replaced range - unchanged
                     expr.clone()
                 }
             }
@@ -761,8 +775,10 @@ mod tests {
     fn test_expr_basic() {
         let nat = Name::from("Nat");
         let expr = Expr::const_(nat.clone());
-        assert!(expr.is_definition());
-        assert!(expr.is_theorem());
+        // as_const returns the name and levels for Const expressions
+        let (name, levels) = expr.as_const().unwrap();
+        assert_eq!(name.as_str(), "Nat");
+        assert!(levels.is_empty());
     }
 
     #[test]
@@ -927,13 +943,16 @@ mod tests {
         // Var(1) > depth 0, so should become Var(0) (1 - 1)
         assert_eq!(result, Expr::Var(0));
 
-        // Test substitution with nested binders
+        // Test substitution with nested binders - replacement is lifted under the binder
+        // λx. (x, x)  --  substituting Var(42) at depth 0
+        // domain: Var(0) -> replaced with Var(42)
+        // body: Var(1) -> shifted to Var(0), then replaced with lifted Var(43)
         let nested = Expr::lam(BinderInfo::Default, Expr::Var(0), Expr::Var(1));
         let result = subst(&nested, &Expr::Var(42), 0);
         let expected = Expr::lam(
             BinderInfo::Default,
             Expr::Var(42), // Var(0) at depth 0 gets replaced
-            Expr::Var(42), // Var(1) > depth 0, so becomes Var(0), but then Var(0) also gets replaced in the recursive call
+            Expr::Var(43), // Var(1) becomes Var(0) after shift, then replaced with Var(42) lifted by 1
         );
         assert_eq!(result, expected);
     }
@@ -951,14 +970,17 @@ mod tests {
         let result = instantiate(&expr, &args);
         assert_eq!(result, Expr::Var(10));
 
-        // Test instantiation with nested binders
+        // Test instantiation with nested binders - argument is lifted under the binder
+        // λx. (x, x)  --  instantiating with [Var(42)]
+        // domain: Var(0) at depth 0 -> replaced with Var(42)
+        // body: Var(1) at depth 1 -> shifted to Var(0), then replaced with Var(42) lifted by 1
         let nested = Expr::lam(BinderInfo::Default, Expr::Var(0), Expr::Var(1));
         let args = vec![Expr::Var(42)];
         let result = instantiate(&nested, &args);
         let expected = Expr::lam(
             BinderInfo::Default,
             Expr::Var(42), // Var(0) at depth 0 gets replaced with arg[0]
-            Expr::Var(42), // Var(1) at depth 1 also gets replaced with arg[0] (since we're calling instantiate_from with depth+1)
+            Expr::Var(43), // Var(1) becomes Var(0), replaced with Var(42) lifted by 1
         );
         assert_eq!(result, expected);
     }
@@ -978,12 +1000,13 @@ mod tests {
         assert_eq!(result, expr);
 
         // Test abstracting multiple free variables
+        // fvars[0] = fvar1 -> Var(0), fvars[1] = fvar2 -> Var(1)
         let fvar1 = FVarId(1);
         let fvar2 = FVarId(2);
         let expr = Expr::app(Expr::FVar(fvar1), Expr::FVar(fvar2));
         let fvars = [fvar1, fvar2];
         let result = abstract_fvars(&expr, &fvars);
-        let expected = Expr::app(Expr::Var(1), Expr::Var(0)); // Reversed due to iter().rev()
+        let expected = Expr::app(Expr::Var(0), Expr::Var(1)); // fvar1 -> Var(0), fvar2 -> Var(1)
         assert_eq!(result, expected);
     }
 
