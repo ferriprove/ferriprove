@@ -187,7 +187,7 @@ The foundation is now complete and ready for actual kernel development work.
     - [x] M1-B-1.1 Parse all declaration kinds from export format (axiom, def, opaque, thm, quot, inductive)
     - [x] M1-B-1.2 Reconstruct `Expr` tree from flat export representation
     - [x] M1-B-1.3 Handle forward references (declarations referencing later-defined names) via cycle-detecting resolver
-    - [ ] M1-B-1.4 Fuzz test parser against malformed/truncated inputs with `cargo-fuzz` (deferred to later)
+    - [x] M1-B-1.4 Fuzz test parser against malformed/truncated inputs with `cargo-fuzz`
     - [x] M1-B-1.5 Unit test: round-trip a small export file, verify env reconstructed correctly
 - [x] **M1-B-2** Register `ferriprove-export` in lean-kernel-arena
     - [x] M1-B-2.1 Confirm arena input format (lean4export NDJSON v3.1.0) is covered by parser
