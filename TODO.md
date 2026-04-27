@@ -193,18 +193,18 @@ The foundation is now complete and ready for actual kernel development work.
     - [x] M1-B-2.1 Confirm arena input format (lean4export NDJSON v3.1.0) is covered by parser
     - [x] M1-B-2.2 Expose `parse_file(path) → Result<ParserState, ParseError>` and `parse_and_resolve(path) → Result<Vec<ResolvedDeclaration>, ParseError>` as public API
 
-### M1-C: Environment (`ferriprove-kernel`)
+### M1-C: Environment (`ferriprove-kernel`) ✅ COMPLETE
 
-- [ ] **M1-C-1** Define `Declaration` type
-    - [ ] M1-C-1.1 Variants: `Axiom`, `Definition`, `Theorem`, `Opaque`, `Quot`, `Inductive`, `Constructor`, `Recursor`
-    - [ ] M1-C-1.2 Transparency field: `reducible`, `instances`, `default`, `all`
-    - [ ] M1-C-1.3 Universe parameter list per declaration
-    - [ ] M1-C-1.4 `is_definition() → bool`, `is_theorem() → bool` helpers
-- [ ] **M1-C-2** Implement `Environment`
-    - [ ] M1-C-2.1 `HashMap<Name, Declaration>` with O(1) lookup
-    - [ ] M1-C-2.2 `add_declaration(decl) → Result<(), EnvError>` with duplicate name check
-    - [ ] M1-C-2.3 `get_declaration(name, transparency) → Option<&Declaration>`
-    - [ ] M1-C-2.4 Extension protocol for inductive types (add constructors + recursor atomically)
+- [x] **M1-C-1** Define `Declaration` type
+    - [x] M1-C-1.1 Variants: `Axiom`, `Definition`, `Theorem`, `Opaque`, `Quot`, `Inductive`, `Constructor`, `Recursor`
+    - [x] M1-C-1.2 Transparency field: `Reducible`, `Instances`, `Default`, `All`
+    - [x] M1-C-1.3 Universe parameter list per declaration
+    - [x] M1-C-1.4 `is_definition() → bool`, `is_theorem() → bool` helpers
+- [x] **M1-C-2** Implement `Environment`
+    - [x] M1-C-2.1 `HashMap<Name, Declaration>` with O(1) lookup
+    - [x] M1-C-2.2 `add_declaration(decl) → Result<(), EnvError>` with duplicate name check
+    - [x] M1-C-2.3 `get_declaration(name, transparency) → Option<&Declaration>`
+    - [x] M1-C-2.4 Extension protocol for inductive types (add constructors + recursor atomically)
 
 ### M1-D: Reduction Engine (Pure — Aeneas scope)
 
