@@ -97,6 +97,8 @@ pub enum Declaration {
     /// Quotient type declaration
     Quot { name: Name },
     /// Inductive type declaration
+    /// Note: Constructors are stored as separate Declaration::Constructor entries
+    /// in the environment, not duplicated here (single source of truth)
     Inductive {
         name: Name,
         universe_params: Vec<Name>,
@@ -105,17 +107,16 @@ pub enum Declaration {
         indices: Vec<Expr>,
         /// The type of the inductive family
         typ: Expr,
-        /// Constructors for this inductive type
-        constructors: Vec<Constructor>,
+        /// Number of constructors (lookup their names separately in environment)
+        num_constructors: usize,
         /// Is this a recursive inductive type?
         is_recursive: bool,
     },
     /// Constructor (part of an inductive type)
     Constructor {
-        name: Name,
         /// The inductive type this constructor belongs to
         inductive: Name,
-        /// Constructor fields
+        /// Constructor details (name, type, recursive args)
         ctor: Constructor,
     },
     /// Recursor for an inductive type
@@ -146,7 +147,7 @@ impl Declaration {
             Declaration::Opaque { name, .. } => name,
             Declaration::Quot { name, .. } => name,
             Declaration::Inductive { name, .. } => name,
-            Declaration::Constructor { name, .. } => name,
+            Declaration::Constructor { ctor, .. } => &ctor.name,
             Declaration::Recursor { name, .. } => name,
         }
     }
@@ -170,7 +171,11 @@ impl Declaration {
             Declaration::Inductive {
                 universe_params, ..
             } => universe_params,
-            Declaration::Constructor { .. } => &[],
+            Declaration::Constructor { .. } => {
+                // Constructors inherit universe params from their inductive type
+                // Look them up from the environment if needed
+                &[]
+            }
             Declaration::Recursor {
                 universe_params, ..
             } => universe_params,
@@ -338,8 +343,9 @@ impl Environment {
                     None
                 }
             }
-            // Theorems are opaque and never unfold
-            Declaration::Theorem { .. } => None,
+            // Theorems are visible for type checking but opaque (never unfold)
+            // Their type signature is needed, only the proof body is hidden
+            Declaration::Theorem { .. } => Some(decl),
             // Everything else (Axiom, Quot, Inductive, Constructor, Recursor) is always visible
             _ => Some(decl),
         }
@@ -595,15 +601,14 @@ mod tests {
             num_params: 0,
             indices: vec![],
             typ: Expr::sort(ferriprove_types::Level::Zero),
-            constructors: vec![],
+            num_constructors: 1,
             is_recursive: true,
         };
 
         let ctor = Declaration::Constructor {
-            name: Name::from("Nat.zero"),
             inductive: Name::from("Nat"),
             ctor: Constructor {
-                name: Name::from("zero"),
+                name: Name::from("Nat.zero"),
                 typ: Expr::const_(Name::from("Nat")),
                 num_recursive_args: 0,
             },
@@ -646,16 +651,15 @@ mod tests {
             num_params: 0,
             indices: vec![],
             typ: Expr::sort(ferriprove_types::Level::Zero),
-            constructors: vec![],
+            num_constructors: 0,
             is_recursive: true,
         };
 
         // Constructor belongs to wrong inductive
         let wrong_ctor = Declaration::Constructor {
-            name: Name::from("List.nil"),
             inductive: Name::from("List"), // Wrong!
             ctor: Constructor {
-                name: Name::from("nil"),
+                name: Name::from("List.nil"),
                 typ: Expr::const_(Name::from("List")),
                 num_recursive_args: 0,
             },
@@ -703,15 +707,14 @@ mod tests {
             num_params: 0,
             indices: vec![],
             typ: Expr::sort(ferriprove_types::Level::Zero),
-            constructors: vec![],
+            num_constructors: 0,
             is_recursive: true,
         };
 
         let ctor = Declaration::Constructor {
-            name: Name::from("Nat.zero"),
             inductive: Name::from("Nat"),
             ctor: Constructor {
-                name: Name::from("zero"),
+                name: Name::from("Nat.zero"),
                 typ: Expr::const_(Name::from("Nat")),
                 num_recursive_args: 0,
             },
