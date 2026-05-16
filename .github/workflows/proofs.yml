@@ -41,7 +41,7 @@ jobs:
 
     - name: Cache Lean packages
       if: steps.check-proofs.outputs.proofs_exists == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.elan/toolchains
@@ -133,7 +133,7 @@ jobs:
 
     - name: Cache Lean packages
       if: steps.check-benchmark.outputs.proofs_exists == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.elan/toolchains
